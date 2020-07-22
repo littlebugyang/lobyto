@@ -7,6 +7,7 @@ import Landing from "./views/Landing.vue";
 import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
 import Profile from "./views/Profile.vue";
+import Todo from "./views/Todo.vue";
 
 Vue.use(Router);
 
@@ -15,6 +16,15 @@ export default new Router({
   routes: [
     {
       path: "/",
+      name: "todo",
+      components:{
+        header: AppHeader,
+        default: Todo,
+        footer: AppFooter
+      }
+    },
+    {
+      path: "/argon",
       name: "components",
       components: {
         header: AppHeader,
