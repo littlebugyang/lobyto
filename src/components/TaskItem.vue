@@ -1,15 +1,24 @@
 <template>
     <div class="container task-item mb-4">
         <div class="row">
-            <div class="task-item__circle" :class="[done ? 'task-item__circle_done' : 'task-item__circle_undone']"
-                 @click="toggleTask">
-                <i class="ni ni-check-bold"></i>
+            <div class="col-1">
+                <div class="task-item__circle" :class="[done ? 'task-item__circle_done' : 'task-item__circle_undone']"
+                     @click="toggleTask">
+                    <i class="ni ni-check-bold"></i>
+                </div>
             </div>
-            <div class="col-10 task-item__title">
-                <slot></slot>
+            <div class="col-8 task-item__title">
+                {{title}}
             </div>
-            <div class="task-item__delete" @click="deleteTask">
-                <i class="fa fa-trash"></i>
+            <div class="col-1">
+                <div class="col-2 task-item__delete" @click="counting ? '' : deleteTask()">
+                    <i class="fa fa-trash"></i>
+                </div>
+            </div>
+            <div v-if="!done" class="col-1">
+                <div class="col-2 task-item__count" @click="counting ? '' : evokeCountdown()">
+                    <i class="ni ni-time-alarm"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -18,9 +27,15 @@
 <script>
     export default {
         name: "task-item",
+        data() {
+            return {
+                counting: false
+            }
+        },
         props: {
             done: Boolean,
-            id: Number
+            id: Number,
+            title: String
         },
         methods: {
             toggleTask: function () {
@@ -28,6 +43,12 @@
             },
             deleteTask: function () {
                 this.$emit('task-deleted', this.id)
+            },
+            evokeCountdown: function () {
+                // todo: Unable to refresh this.counting when the page is refreshed.
+                // todo: After the count down, this.counting couldn't change back.
+                this.counting = true
+                this.$emit('evoke-countdown', this.id)
             }
         }
     }
@@ -63,10 +84,21 @@
     }
 
     .task-item__delete {
-        color: red;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        color: #f5365c;
     }
 
-    .task-item__delete:hover {
+    .task-item__count {
+        width: 25px;
+        height: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         cursor: pointer;
     }
 </style>
