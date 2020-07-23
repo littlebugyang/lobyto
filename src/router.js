@@ -8,6 +8,8 @@ import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
 import Profile from "./views/Profile.vue";
 import Todo from "./views/Todo.vue";
+import Footer from "./layout/Footer";
+import Header from "./layout/Header";
 
 Vue.use(Router);
 
@@ -18,9 +20,9 @@ export default new Router({
       path: "/",
       name: "todo",
       components:{
-        header: AppHeader,
+        header: Header,
         default: Todo,
-        footer: AppFooter
+        footer: Footer
       }
     },
     {
