@@ -11,12 +11,14 @@
                 {{title}}
             </div>
             <div class="col-1">
-                <div class="col-2 task-item__delete" @click="counting ? '' : deleteTask()">
+                <div class="col-2 task-item__delete" :class="{'task-item__button_disabled' : counting}"
+                     @click="counting ? '' : deleteTask()">
                     <i class="fa fa-trash"></i>
                 </div>
             </div>
             <div v-if="!done" class="col-1">
-                <div class="col-2 task-item__count" @click="counting ? '' : evokeCountdown()">
+                <div class="col-2 task-item__count" :class="{'task-item__button_disabled' : counting}"
+                     @click="counting ? '' : evokeCountdown()">
                     <i class="ni ni-time-alarm"></i>
                 </div>
             </div>
@@ -27,15 +29,11 @@
 <script>
     export default {
         name: "task-item",
-        data() {
-            return {
-                counting: false
-            }
-        },
         props: {
             done: Boolean,
             id: Number,
-            title: String
+            title: String,
+            counting: Boolean
         },
         methods: {
             toggleTask: function () {
@@ -45,9 +43,6 @@
                 this.$emit('task-deleted', this.id)
             },
             evokeCountdown: function () {
-                // todo: Unable to refresh this.counting when the page is refreshed.
-                // todo: After the count down, this.counting couldn't change back.
-                this.counting = true
                 this.$emit('evoke-countdown', this.id)
             }
         }
@@ -89,6 +84,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        /*cursor: pointer;*/
         cursor: pointer;
         color: #f5365c;
     }
@@ -100,5 +96,9 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
+    }
+
+    .task-item__button_disabled {
+        cursor: not-allowed;
     }
 </style>

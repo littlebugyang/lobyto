@@ -26,11 +26,11 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-10">
-                            <base-input :value="new_title" @input="handleNewTaskInput"
+                            <base-input :value="newTitle" @input="handleNewTaskInput"
                                         placeholder="What you are to do ..."></base-input>
                         </div>
                         <div class="col-2">
-                            <base-button type="primary" @click="addTask" :disabled="new_title === ''">Add</base-button>
+                            <base-button type="primary" @click="addTask" :disabled="newTitle === ''">Add</base-button>
                         </div>
                     </div>
                 </div>
@@ -43,6 +43,7 @@
                 </h4>
 
                 <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
+                           :counting.sync="task.counting"
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted"
                            v-on:evoke-countdown="handleCountdownEvoked">
                 </task-item>
@@ -55,6 +56,7 @@
                 </h4>
 
                 <task-item v-for="task in doneTasks" :key="task.id" :done=true :id="task.id" :title="task.title"
+                           :counting.sync="task.counting"
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted">
                 </task-item>
 
@@ -100,8 +102,8 @@
 
             // todo: Wrap these getItem() code into one block. Write a method named "loadFromLocalStorage"
 
-            if (localStorage.getItem('accumulated_id') !== null) {
-                this.accumulated_id = localStorage.getItem('accumulated_id')
+            if (localStorage.getItem('accumulatedId') !== null) {
+                this.accumulatedId = localStorage.getItem('accumulatedId')
             }
 
             if (localStorage.getItem('tasks') !== null) {
@@ -121,20 +123,25 @@
         },
         data() {
             return {
-                // todo: Modify the new_title and accumulated_id to fit a unified naming rule.
-                // todo: Wrap variables about countdown in to "countdown: {}"
-                new_title: '',
-                accumulated_id: 0,
+                newTitle: '',
+                accumulatedId: 0,
                 tasks: [],
+
+                // The three variables below are about countdown, but there's no need to store them.
                 showCountdown: false,
-                presetCountdownMinutes: ['25', '35', '45'],
+                presetCountdownMinutes: ['1', '25', '35', '45'],
                 intervalId: 0,
+
+                // The variables below are about countdown. They should be stored in local storage.
+                // todo: change object variable name to "lastCountdown"
                 countdown: {
                     taskId: -1,
                     startTime: 0,
-                    minutes: '25'
+                    minutes: '1'
                 },
                 countdowns: [],
+
+                // progress of tomato
                 progress: {
                     show: false,
                     type: 'primary',
@@ -167,9 +174,13 @@
                 return this.countdown.minutes * 60000 <= (now - this.countdown.startTime)
             },
             loadCountdown: function () {
-                // No countdown.startTime saved or the last countdown.startTime has expired
-                if (this.countdown.startTime === 0 || this.countdownExpired(Date.now())) {
-                    clearInterval(this.intervalId)
+                // No countdown.startTime saved
+                if (this.countdown.startTime === 0) {
+                    return
+                }
+                // The last countdown.startTime has expired
+
+                else if (this.countdownExpired(Date.now())) {
                     this.cancelCountdown()
                     return
                 }
@@ -197,6 +208,8 @@
                 // Save the countdown settings to the local storage.
                 this.saveToLocalStorage('countdown', JSON.stringify(this.countdown))
                 this.loadCountdown()
+                this.tasks[this.getTaskIndexById(this.countdown.taskId)].counting = true
+                this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
             },
             saveCountdown: function () {
                 this.countdowns.push({
@@ -208,24 +221,27 @@
             },
             cancelCountdown: function () {
                 clearInterval(this.intervalId)
+                this.tasks[this.getTaskIndexById(this.countdown.taskId)].counting = false
                 this.intervalId = 0
                 this.progress.value = 0
                 this.progress.show = false
                 this.countdown.startTime = 0
                 this.countdown.taskId = -1
+                this.countdown.minutes = '25'
             },
             addTask: function () {
                 this.tasks.push({
-                    id: ++this.accumulated_id,
+                    id: ++this.accumulatedId,
                     done: false,
-                    title: this.new_title
+                    title: this.newTitle,
+                    counting: false
                 })
-                this.new_title = ''
+                this.newTitle = ''
                 this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
-                this.saveToLocalStorage('accumulated_id', this.accumulated_id)
+                this.saveToLocalStorage('accumulatedId', this.accumulatedId)
             },
             handleNewTaskInput: function (val) {
-                this.new_title = val
+                this.newTitle = val
             },
             handleTaskToggle: function (id) {
                 let i = this.getTaskIndexById(id)
