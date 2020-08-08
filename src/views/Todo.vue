@@ -61,6 +61,13 @@
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted">
                 </task-item>
 
+                <!-- View the completed tasks -->
+                <h4 class="mb-5">
+                    <span>Today's Tomato</span>
+                </h4>
+
+                <span>The time you have been concentrated today is: <span style="color: #fb6340; font-size: 300%">{{parseInt(sumTomato / 60)}} h {{sumTomato % 60}} m</span></span>
+
             </div>
         </div>
         <!-- The modal for setting countdown -->
@@ -157,6 +164,23 @@
             },
             undoneTasks: function () {
                 return this.tasks.filter(task => !task.done)
+            },
+            sumTomato: function () {
+                let sum = 0
+
+                let now = new Date()
+                let todayYear = now.getFullYear()
+                let todayMonth = now.getMonth()
+                let todayDate = now.getDate()
+
+                for (let i = 0; i < this.countdowns.length; ++i) {
+                    let startTime = new Date(this.countdowns[i].startTime)
+                    // This is today's tomato.
+                    if (startTime.getFullYear() === todayYear && startTime.getMonth() === todayMonth && startTime.getDate() === todayDate) {
+                        sum += parseInt(this.countdowns[i].minutes)
+                    }
+                }
+                return sum
             }
         },
         methods: {
@@ -239,13 +263,15 @@
                 this.countdown.startTime = 0
                 this.countdown.taskId = -1
                 this.countdown.minutes = '25'
+                this.saveToLocalStorage('countdown', JSON.stringify(this.countdown))
             },
             addTask: function () {
                 this.tasks.push({
                     id: ++this.accumulatedId,
                     done: false,
                     title: this.newTitle,
-                    counting: false
+                    counting: false,
+                    createdTime: Date.now()
                 })
                 this.newTitle = ''
                 this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
