@@ -264,6 +264,7 @@
                 this.countdown.taskId = -1
                 this.countdown.minutes = '25'
                 this.saveToLocalStorage('countdown', JSON.stringify(this.countdown))
+                this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
             },
             addTask: function () {
                 this.tasks.push({
