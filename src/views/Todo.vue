@@ -318,12 +318,19 @@
                 // Avoid flash of white box if rendered for any reason.
                 textArea.style.background = 'transparent';
 
-                let toBeCopied = ''
-                for (let i = 0; i < this.tasks.length; ++i) {
-                    let task = this.tasks[i]
-                    toBeCopied += `- [${task.done ? 'x' : ' '}] ${task.title}\n`
-                }
-                textArea.value = toBeCopied
+                // copy markdown content to clipboard
+                // let toBeCopied = ''
+                // for (let i = 0; i < this.tasks.length; ++i) {
+                //     let task = this.tasks[i]
+                //     toBeCopied += `- [${task.done ? 'x' : ' '}] ${task.title}\n`
+                // }
+                // textArea.value = toBeCopied
+
+                let toBeCopied = {}
+                toBeCopied.accumulatedId = this.accumulatedId
+                toBeCopied.countdowns = this.countdowns
+                toBeCopied.tasks = this.tasks
+                textArea.value = `\`\`\`json\n${JSON.stringify(toBeCopied)}`
 
                 document.body.appendChild(textArea);
                 textArea.focus();
