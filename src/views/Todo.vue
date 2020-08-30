@@ -145,7 +145,7 @@
                 countdown: {
                     taskId: -1,
                     startTime: 0,
-                    minutes: '25'
+                    minutes: '15'
                 },
                 countdowns: [],
 
