@@ -262,7 +262,7 @@
                 this.progress.show = false
                 this.countdown.startTime = 0
                 this.countdown.taskId = -1
-                this.countdown.minutes = '25'
+                this.countdown.minutes = '15'
                 this.saveToLocalStorage('countdown', JSON.stringify(this.countdown))
                 this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
             },
