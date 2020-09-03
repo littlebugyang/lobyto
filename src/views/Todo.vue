@@ -61,12 +61,22 @@
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted">
                 </task-item>
 
+                <hr/>
+
                 <!-- View the completed tasks -->
                 <h4 class="mb-5">
                     <span>Today's Tomato</span>
                 </h4>
 
                 <span>The time you have been concentrated today is: <span style="color: #fb6340; font-size: 300%">{{parseInt(sumTomato / 60)}} h {{sumTomato % 60}} m</span></span>
+
+                <hr/>
+
+                <!-- View the completed tasks -->
+                <h4 class="mb-5">
+                    <span>Overview of Tomatoes</span>
+                    <div id="overviewChart"></div>
+                </h4>
 
             </div>
         </div>
@@ -128,6 +138,51 @@
 
             // Continues the last countdown.
             this.loadCountdown()
+
+            // initialize echarts
+            let overview = this.$echarts.init(document.getElementById('overviewChart'))
+
+            let recentDates = []
+            let recentMinutes = []
+            let dateCount = 0
+            for (let i = this.countdowns.length - 1; i > 0 && dateCount < 8; --i) {
+                let startTime = new Date(this.countdowns[i].startTime)
+                let recentMonth = startTime.getMonth() + 1
+                let recentDate = startTime.getDate()
+
+                if (recentDates.length == 0 || `${recentMonth}.${recentDate}` != recentDates[recentDates.length - 1]) {
+                    // being able to push a new date
+                    ++dateCount
+
+                    // push a new date and new minutes
+                    recentDates.push(`${recentMonth}.${recentDate}`)
+                    recentMinutes.push(parseInt(this.countdowns[i].minutes))
+                } else {
+                    recentMinutes[recentMinutes.length - 1] += parseInt(this.countdowns[i].minutes)
+                }
+            }
+
+            recentDates.reverse()
+            recentMinutes.reverse()
+
+            overview.setOption({
+                color: '#5e72e4',
+                title: {
+                    text: 'Tomato sums in recent days',
+                    left: 'center'
+                },
+                xAxis: {
+                    name: 'date',
+                    data: recentDates
+                },
+                yAxis: {
+                    name: 'hours'
+                },
+                series: [{
+                    type: 'bar',
+                    data: recentMinutes.map(minutes => new Number(minutes / 60.0).toFixed(2))
+                }]
+            })
         },
         data() {
             return {
@@ -369,5 +424,11 @@
 </script>
 
 <style scoped>
-
+    #overviewChart {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 400px;
+    }
 </style>
