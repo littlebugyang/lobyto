@@ -140,6 +140,7 @@
             this.loadCountdown()
 
             // initialize echarts
+            // todo: Take the dates with no hours into consideration
             let overview = this.$echarts.init(document.getElementById('overviewChart'))
 
             let recentDates = []
