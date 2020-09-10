@@ -193,7 +193,7 @@
 
                 // The three variables below are about countdown, but there's no need to store them.
                 showCountdown: false,
-                presetCountdownMinutes: ['15', '25', '35', '45'],
+                presetCountdownMinutes: ['2', '15', '25', '35', '45', '60', '120', '180'],
                 intervalId: 0,
 
                 // The variables below are about countdown. They should be stored in local storage.
