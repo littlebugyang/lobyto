@@ -141,6 +141,7 @@
 
             // initialize echarts
             // todo: Take the dates with no hours into consideration
+            // todo: Make the chart changes in real-time.
             let overview = this.$echarts.init(document.getElementById('overviewChart'))
 
             let recentDates = []
@@ -193,7 +194,7 @@
 
                 // The three variables below are about countdown, but there's no need to store them.
                 showCountdown: false,
-                presetCountdownMinutes: ['2', '15', '25', '35', '45', '60', '120', '180'],
+                presetCountdownMinutes: ['2', '15', '25', '35', '45', '60', '90', '120', '180'],
                 intervalId: 0,
 
                 // The variables below are about countdown. They should be stored in local storage.
