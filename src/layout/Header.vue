@@ -15,13 +15,13 @@
 
             <ul class="navbar-nav ml-lg-auto">
                 <li class="nav-item">
-                    <a class="nav-link nav-link-icon" href="#">
-                        Tomato
+                    <a class="nav-link nav-link-icon" href="#/tomatoes">
+                        Tomatoes
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-icon" href="#">
-                        History
+                    <a class="nav-link nav-link-icon" href="#/tasks">
+                        Tasks
                     </a>
                 </li>
                 <base-dropdown tag="li" title="Settings">
