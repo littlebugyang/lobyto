@@ -10,6 +10,7 @@
                 <div v-if="progress.show">
                     <h6><span>{{tasks[getTaskIndexById(countdown.taskId)].title}}</span></h6>
                     <base-progress :type="progress.type" :value="progress.value"></base-progress>
+                    <base-button type="default" @click="finishCountdown">Finish Ahead</base-button>
                     <base-button type="warning" @click="cancelCountdown">Cancel</base-button>
                 </div>
                 <h6 v-else class="mb-3">
@@ -253,6 +254,7 @@
                 return -1
             },
             countdownExpired: function (now) {
+                // (type string) * (type number) yields (type number) ??????
                 return this.countdown.minutes * 60000 <= (now - this.countdown.startTime)
             },
             loadCountdown: function () {
@@ -310,6 +312,16 @@
                     startTime: this.countdown.startTime
                 })
                 this.saveToLocalStorage('countdowns', JSON.stringify(this.countdowns))
+            },
+            finishCountdown: function () {
+                // finish countdown ahead
+                this.countdowns.push({
+                    taskId: this.countdown.taskId,
+                    minutes: '' + Math.floor((Date.now() - this.countdown.startTime) / 60000),
+                    startTime: this.countdown.startTime
+                })
+                this.saveToLocalStorage('countdowns', JSON.stringify(this.countdowns))
+                this.cancelCountdown()
             },
             cancelCountdown: function () {
                 clearInterval(this.intervalId)
