@@ -315,9 +315,15 @@
             },
             finishCountdown: function () {
                 // finish countdown ahead
+                let newMinutes = Math.floor((Date.now() - this.countdown.startTime) / 60000)
+                if ( 1 > newMinutes){
+                    // tomato of less than 1 minute does not count
+                    return
+                }
+
                 this.countdowns.push({
                     taskId: this.countdown.taskId,
-                    minutes: '' + Math.floor((Date.now() - this.countdown.startTime) / 60000),
+                    minutes: '' + newMinutes,
                     startTime: this.countdown.startTime
                 })
                 this.saveToLocalStorage('countdowns', JSON.stringify(this.countdowns))
