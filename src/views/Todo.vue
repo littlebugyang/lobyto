@@ -102,10 +102,11 @@
 </template>
 
 <script>
-    import BaseInput from "@/components/BaseInput";
-    import BaseButton from "@/components/BaseButton";
-    import TaskItem from "@/components/TaskItem";
+    import BaseInput from "@/components/BaseInput"
+    import BaseButton from "@/components/BaseButton"
+    import TaskItem from "@/components/TaskItem"
     import Modal from "@/components/Modal"
+    import requests from "../plugins/request"
 
     export default {
         name: "Todo",
@@ -274,7 +275,7 @@
                 let _this = this
                 this.intervalId = setInterval(function () {
                     if (_this.countdownExpired(Date.now())) {
-                        _this.saveCountdown()
+                        _this.addCountdown()
                         _this.cancelCountdown()
 
                         // show notification
@@ -305,28 +306,36 @@
                 this.tasks[this.getTaskIndexById(this.countdown.taskId)].counting = true
                 this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
             },
-            saveCountdown: function () {
+            addCountdown: function () {
                 this.countdowns.push({
                     taskId: this.countdown.taskId,
                     minutes: this.countdown.minutes,
                     startTime: this.countdown.startTime
                 })
+                // add countdown to server
+                requests.addCountdown(
+                    {
+                        countdown: {
+                            taskId: this.countdown.taskId,
+                            length: this.countdown.minutes,
+                            startTime: this.countdown.startTime
+                        }
+                    },
+                    () => {
+                    }, () => {
+                    })
                 this.saveToLocalStorage('countdowns', JSON.stringify(this.countdowns))
             },
             finishCountdown: function () {
                 // finish countdown ahead
                 let newMinutes = Math.floor((Date.now() - this.countdown.startTime) / 60000)
-                if ( 1 > newMinutes){
+                if (1 > newMinutes) {
                     // tomato of less than 1 minute does not count
                     return
                 }
 
-                this.countdowns.push({
-                    taskId: this.countdown.taskId,
-                    minutes: '' + newMinutes,
-                    startTime: this.countdown.startTime
-                })
-                this.saveToLocalStorage('countdowns', JSON.stringify(this.countdowns))
+                this.countdown.minutes = '' + newMinutes
+                this.addCountdown()
                 this.cancelCountdown()
             },
             cancelCountdown: function () {
@@ -342,6 +351,14 @@
                 this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
             },
             addTask: function () {
+                requests.addTask({
+                        task: {
+                            title: this.newTitle
+                        }
+                    }, () => {
+                    }, () => {
+                    }
+                )
                 this.tasks.push({
                     id: ++this.accumulatedId,
                     done: false,

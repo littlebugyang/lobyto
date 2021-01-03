@@ -2,6 +2,16 @@ const webpack = require('webpack');
 
 module.exports = {
     publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
+    devServer: {
+        proxy: {
+            "^/api/": {
+                target: "http://localhost:3000",
+                pathRewrite: {"^/api/": "/"},
+                changeOrigin: true,
+                logLevel: "debug"
+            }
+        }
+    },
     configureWebpack: {
         // Set up all the aliases we use in our app.
         plugins: [
@@ -21,4 +31,4 @@ module.exports = {
         // Enable CSS source maps.
         sourceMap: process.env.NODE_ENV !== 'production'
     }
-};
+}
