@@ -13,6 +13,13 @@ export default {
             task: body.task
         }).then(succ()).catch(fail())
     },
+    updateTask: function (body, succ, fail) {
+        axios.put("/update_task", {
+            userName: secret.userName,
+            password: secret.password,
+            task: body.task
+        }).then(succ()).catch(fail())
+    },
     addCountdown: function (body, succ, fail) {
         axios.post("/add_countdown", {
             userName: secret.userName,
