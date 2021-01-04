@@ -82,7 +82,7 @@
             </div>
         </div>
         <!-- The modal for setting countdown -->
-        <modal v-if="countdown.taskId !== -1" :show.sync="showCountdown">
+        <modal v-if="showCountdown && countdown.taskId !== -1" :show.sync="showCountdown">
             <template slot="header">
                 <h5 class="modal-title">Countdown for {{tasks[getTaskIndexById(countdown.taskId)].title}}</h5>
             </template>
@@ -135,7 +135,6 @@
 
             await requests.getCountdowns((data) => {
                 this.countdowns = data
-                console.log(data)
             }, () => {
             })
 
@@ -186,7 +185,7 @@
                 intervalId: 0,
 
                 // The variables below are about countdown. They should be stored in local storage.
-                // todo: change object variable name to "lastCountdown"
+                // todo: change object variable name to "currentCountdown"
                 countdown: {
                     taskId: -1,
                     startTime: 0,
@@ -451,9 +450,9 @@
                 this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
             },
             handleTaskDeleted: function (id) {
+                // todo: implement the api of deleting the todo
                 console.log("Delete task item with id: ", id)
                 this.tasks.splice(this.getTaskIndexById(id), 1)
-                this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
             },
             handleCountdownEvoked: function (id) {
                 console.log("A task's countdown has been evoked: ", id)
