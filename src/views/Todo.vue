@@ -44,7 +44,7 @@
                     <base-button type="primary" @click="exportTasks">export</base-button>
                 </h4>
 
-                <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
+                <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.task_title"
                            :counting.sync="task.counting"
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted"
                            v-on:evoke-countdown="handleCountdownEvoked">
@@ -57,7 +57,7 @@
                     <span>Completed Tasks</span>
                 </h4>
 
-                <task-item v-for="task in doneTasks" :key="task.id" :done=true :id="task.id" :title="task.title"
+                <task-item v-for="task in doneTasks" :key="task.id" :done=true :id="task.id" :title="task.task_title"
                            :counting.sync="task.counting"
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted">
                 </task-item>
@@ -113,7 +113,7 @@
         components: {
             BaseButton, BaseInput, TaskItem, Modal
         },
-        mounted: function () {
+        mounted: async function () {
             // load data from localStorage
             if (typeof (Storage) === "undefined") {
                 console.log("Local Storage not available. ")
@@ -122,18 +122,29 @@
 
             // todo: Wrap these getItem() code into one block. Write a method named "loadFromLocalStorage"
 
+
             if (localStorage.getItem('accumulatedId') !== null) {
                 this.accumulatedId = localStorage.getItem('accumulatedId')
             }
 
-            if (localStorage.getItem('tasks') !== null) {
-                this.tasks = JSON.parse(localStorage.getItem('tasks'))
-            }
+            await requests.getTasks((res) => {
+                console.log(res)
+                this.tasks = res.data
+            }, () => {
+            })
+
+            //
+            // await requests.getCountdowns((res) => {
+            //     console.log(res)
+            //     // this.countdowns = res.data
+            // }, () => {
+            // })
 
             if (localStorage.getItem('countdowns') !== null) {
                 this.countdowns = JSON.parse(localStorage.getItem('countdowns'))
             }
 
+            // localStorage may contain the last unsaved countdown
             if (localStorage.getItem('countdown') !== null) {
                 this.countdown = JSON.parse(localStorage.getItem('countdown'))
             }
@@ -219,10 +230,10 @@
         computed: {
             // use computed to avoid redundant traversal
             doneTasks: function () {
-                return this.tasks.filter(task => task.done)
+                return this.tasks.filter(task => task.task_status == 1)
             },
             undoneTasks: function () {
-                return this.tasks.filter(task => !task.done)
+                return this.tasks.filter(task => task.task_status == 0)
             },
             sumTomato: function () {
                 let sum = 0
