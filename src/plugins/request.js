@@ -8,7 +8,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 const requests = {
     dataMap: function (dataType, resData) {
         const dataTypes = {
-            "todo": {
+            "task": {
                 id: "task_id",
                 title: "task_title",
                 status: "task_status"
@@ -31,7 +31,7 @@ const requests = {
     // task-oriented
     getTasks: function (succ, fail) {
         return axios.get("/get_tasks").then(function (res) {
-            succ(requests.dataMap("todo", res.data))
+            succ(requests.dataMap("task", res.data))
         }).catch(function (error) {
             fail(error)
         })
@@ -42,7 +42,7 @@ const requests = {
             password: secret.password,
             task: body.task
         }).then(function (res) {
-            succ(requests.dataMap("todo", res.data))
+            succ(requests.dataMap("task", res.data))
         }).catch(function (error) {
             fail(error)
         })

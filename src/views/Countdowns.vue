@@ -6,7 +6,7 @@
 
 <script>
     export default {
-        name: "Tomatoes",
+        name: "Countdowns",
         data() {
             return {
                 title: 'Tomatoes'

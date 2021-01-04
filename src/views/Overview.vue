@@ -44,7 +44,8 @@
                     <base-button type="primary" @click="exportTasks">export</base-button>
                 </h4>
 
-                <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
+                <task-item v-for="task in undoneTasks" :key="task.id" :done="task.status===1" :id="task.id"
+                           :title="task.title"
                            :counting.sync="task.counting"
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted"
                            v-on:evoke-countdown="handleCountdownEvoked">
@@ -52,21 +53,9 @@
 
                 <hr/>
 
-                <!-- View the completed tasks -->
+                <!-- View the Today's countdown -->
                 <h4 class="mb-5">
-                    <span>Completed Tasks</span>
-                </h4>
-
-                <task-item v-for="task in doneTasks" :key="task.id" :done=true :id="task.id" :title="task.title"
-                           :counting.sync="task.counting"
-                           v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted">
-                </task-item>
-
-                <hr/>
-
-                <!-- View the completed tasks -->
-                <h4 class="mb-5">
-                    <span>Today's Tomato</span>
+                    <span>Today's Countdowns</span>
                 </h4>
 
                 <span>The time you have been concentrated today is: <span style="color: #fb6340; font-size: 300%">{{parseInt(sumTomato / 60)}} h {{sumTomato % 60}} m</span></span>
@@ -88,7 +77,7 @@
             </template>
             <div class="container justify-content-center">
                 <div class="row">
-                    <base-radio class="col-4" v-for="min in presetCountdownMinutes" :key="min" :name="min"
+                    <base-radio class="col-4" v-for="min in presetCountdownLengths" :key="min" :name="min"
                                 v-model="countdown.minutes">
                         {{`${min}min`}}
                     </base-radio>
@@ -109,7 +98,7 @@
     import requests from "../plugins/request"
 
     export default {
-        name: "Todo",
+        name: "Overview",
         components: {
             BaseButton, BaseInput, TaskItem, Modal
         },
@@ -172,6 +161,11 @@
                 }]
             })
         },
+        beforeDestroy() {
+            // avoid duplicate countdown
+            console.log("Clear the interval with id: ", this.intervalId)
+            clearInterval(this.intervalId)
+        },
         data() {
             return {
                 newTitle: '',
@@ -181,7 +175,7 @@
 
                 // The three variables below are about countdown, but there's no need to store them.
                 showCountdown: false,
-                presetCountdownMinutes: ['2', '15', '25', '35', '45', '60', '90', '120', '180'],
+                presetCountdownLengths: ['2', '15', '25', '35', '45', '60', '90', '120', '180'],
                 intervalId: 0,
 
                 // The variables below are about countdown. They should be stored in local storage.
@@ -324,6 +318,7 @@
                 this.cancelCountdown()
             },
             cancelCountdown: function () {
+                console.log("Clear the interval with id: ", this.intervalId)
                 clearInterval(this.intervalId)
                 this.tasks[this.getTaskIndexById(this.countdown.taskId)].counting = false
                 this.intervalId = 0

@@ -7,8 +7,8 @@ import Landing from "./views/Landing.vue";
 import Login from "./views/Login.vue";
 import Register from "./views/Register.vue";
 import Profile from "./views/Profile.vue";
-import Todo from "./views/Todo.vue";
-import Tomatoes from "./views/Tomatoes";
+import Overview from "./views/Overview";
+import Countdowns from "./views/Countdowns";
 import Tasks from "./views/Tasks"
 import Footer from "./layout/Footer";
 import Header from "./layout/Header";
@@ -20,10 +20,10 @@ export default new Router({
     routes: [
         {
             path: "/",
-            name: "todo",
+            name: "overview",
             components: {
                 header: Header,
-                default: Todo,
+                default: Overview,
                 footer: Footer
             }
         },
@@ -32,7 +32,7 @@ export default new Router({
             name: "tomatoes",
             components: {
                 header: Header,
-                default: Tomatoes,
+                default: Countdowns,
                 footer: Footer
             }
         },

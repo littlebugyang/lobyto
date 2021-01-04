@@ -1,6 +1,6 @@
 <template>
     <div>
-        <base-nav type="primary" effect="dark" title="todo" expand>
+        <base-nav type="primary" effect="dark" title="lobyto" expand>
             <div class="row" slot="content-header" slot-scope="{closeMenu}">
                 <div class="col-6 collapse-brand">
                     <a href="https://demos.creative-tim.com/vue-argon-design-system/documentation/">
@@ -15,8 +15,8 @@
 
             <ul class="navbar-nav ml-lg-auto">
                 <li class="nav-item">
-                    <a class="nav-link nav-link-icon" href="#/tomatoes">
-                        Tomatoes
+                    <a class="nav-link nav-link-icon" href="#/">
+                        Overview
                     </a>
                 </li>
                 <li class="nav-item">
@@ -24,9 +24,14 @@
                         Tasks
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-icon" href="#/tomatoes">
+                        Countdowns
+                    </a>
+                </li>
                 <base-dropdown tag="li" title="Settings">
-                    <a class="dropdown-item" href="#">Todo settings</a>
-                    <a class="dropdown-item" href="#">Tomato settings</a>
+                    <a class="dropdown-item" href="#">Task settings</a>
+                    <a class="dropdown-item" href="#">Countdown settings</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">System settings</a>
                 </base-dropdown>
