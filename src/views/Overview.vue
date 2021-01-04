@@ -62,9 +62,9 @@
 
                 <hr/>
 
-                <!-- View the completed tasks -->
+                <!-- View the overview of countdowns -->
                 <h4 class="mb-5">
-                    <span>Overview of Tomatoes</span>
+                    <span>Overview of Countdowns</span>
                     <div id="overviewChart"></div>
                 </h4>
 
@@ -107,13 +107,6 @@
             if (typeof (Storage) === "undefined") {
                 console.log("Local Storage not available. ")
                 return
-            }
-
-            // todo: Wrap these getItem() code into one block. Write a method named "loadFromLocalStorage"
-
-
-            if (localStorage.getItem('accumulatedId') !== null) {
-                this.accumulatedId = localStorage.getItem('accumulatedId')
             }
 
             // get tasks and countdowns
@@ -169,7 +162,6 @@
         data() {
             return {
                 newTitle: '',
-                accumulatedId: 0,
                 tasks: [],
                 //oldTasks: [],
 
@@ -417,7 +409,6 @@
                 // textArea.value = toBeCopied
 
                 let toBeCopied = {}
-                toBeCopied.accumulatedId = this.accumulatedId
                 toBeCopied.countdowns = this.countdowns
                 toBeCopied.tasks = this.tasks
                 textArea.value = `\`\`\`json\n${JSON.stringify(toBeCopied)}`
