@@ -44,7 +44,7 @@
                     <base-button type="primary" @click="exportTasks">export</base-button>
                 </h4>
 
-                <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.task_title"
+                <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
                            :counting.sync="task.counting"
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted"
                            v-on:evoke-countdown="handleCountdownEvoked">
@@ -57,7 +57,7 @@
                     <span>Completed Tasks</span>
                 </h4>
 
-                <task-item v-for="task in doneTasks" :key="task.id" :done=true :id="task.id" :title="task.task_title"
+                <task-item v-for="task in doneTasks" :key="task.id" :done=true :id="task.id" :title="task.title"
                            :counting.sync="task.counting"
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted">
                 </task-item>
@@ -127,22 +127,17 @@
                 this.accumulatedId = localStorage.getItem('accumulatedId')
             }
 
-            await requests.getTasks((res) => {
-                console.log(res)
-                this.tasks = res.data
+            // get tasks and countdowns
+            await requests.getTasks((data) => {
+                this.tasks = data
             }, () => {
             })
 
-            //
-            // await requests.getCountdowns((res) => {
-            //     console.log(res)
-            //     // this.countdowns = res.data
-            // }, () => {
-            // })
-
-            if (localStorage.getItem('countdowns') !== null) {
-                this.countdowns = JSON.parse(localStorage.getItem('countdowns'))
-            }
+            await requests.getCountdowns((data) => {
+                this.countdowns = data
+                console.log(data)
+            }, () => {
+            })
 
             // localStorage may contain the last unsaved countdown
             if (localStorage.getItem('countdown') !== null) {
@@ -157,28 +152,7 @@
             // todo: Make the chart changes in real-time.
             let overview = this.$echarts.init(document.getElementById('overviewChart'))
 
-            let recentDates = []
-            let recentMinutes = []
-            let dateCount = 0
-            for (let i = this.countdowns.length - 1; i > 0 && dateCount < 8; --i) {
-                let startTime = new Date(this.countdowns[i].startTime)
-                let recentMonth = startTime.getMonth() + 1
-                let recentDate = startTime.getDate()
-
-                if (recentDates.length == 0 || `${recentMonth}.${recentDate}` != recentDates[recentDates.length - 1]) {
-                    // being able to push a new date
-                    ++dateCount
-
-                    // push a new date and new minutes
-                    recentDates.push(`${recentMonth}.${recentDate}`)
-                    recentMinutes.push(parseInt(this.countdowns[i].minutes))
-                } else {
-                    recentMinutes[recentMinutes.length - 1] += parseInt(this.countdowns[i].minutes)
-                }
-            }
-
-            recentDates.reverse()
-            recentMinutes.reverse()
+            const statistics = this.calculateChartStatistics()
 
             overview.setOption({
                 color: '#5e72e4',
@@ -188,14 +162,14 @@
                 },
                 xAxis: {
                     name: 'date',
-                    data: recentDates
+                    data: statistics.recentDates
                 },
                 yAxis: {
                     name: 'hours'
                 },
                 series: [{
                     type: 'bar',
-                    data: recentMinutes.map(minutes => new Number(minutes / 60.0).toFixed(2))
+                    data: statistics.recentLengths.map(minutes => new Number(minutes / 60.0).toFixed(2))
                 }]
             })
         },
@@ -204,6 +178,7 @@
                 newTitle: '',
                 accumulatedId: 0,
                 tasks: [],
+                //oldTasks: [],
 
                 // The three variables below are about countdown, but there's no need to store them.
                 showCountdown: false,
@@ -230,10 +205,10 @@
         computed: {
             // use computed to avoid redundant traversal
             doneTasks: function () {
-                return this.tasks.filter(task => task.task_status == 1)
+                return this.tasks.filter(task => task.status == 1)
             },
             undoneTasks: function () {
-                return this.tasks.filter(task => task.task_status == 0)
+                return this.tasks.filter(task => task.status == 0)
             },
             sumTomato: function () {
                 let sum = 0
@@ -247,7 +222,7 @@
                     let startTime = new Date(this.countdowns[i].startTime)
                     // This is today's tomato.
                     if (startTime.getFullYear() === todayYear && startTime.getMonth() === todayMonth && startTime.getDate() === todayDate) {
-                        sum += parseInt(this.countdowns[i].minutes)
+                        sum += parseInt(this.countdowns[i].length)
                     }
                 }
                 return sum
@@ -380,6 +355,30 @@
                 this.newTitle = ''
                 this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
                 this.saveToLocalStorage('accumulatedId', this.accumulatedId)
+            },
+            calculateChartStatistics: function () {
+                // calculate the statistics the chart needs
+                let recentDates = []
+                let recentLengths = []
+                let dateCount = 0
+                let maxDates = 8
+                for (let i = this.countdowns.length - 1; i > 0 && dateCount < maxDates; --i) {
+                    let startTime = new Date(Date.parse(this.countdowns[i].startTime))
+                    let recentMonth = startTime.getMonth() + 1
+                    let recentDate = startTime.getDate()
+
+                    if (recentDates.length == 0 || `${recentMonth}.${recentDate}` != recentDates[recentDates.length - 1]) {
+                        // being able to push a new date
+                        ++dateCount
+
+                        // push a new date and new minutes
+                        recentDates.push(`${recentMonth}.${recentDate}`)
+                        recentLengths.push(parseInt(this.countdowns[i].length))
+                    } else {
+                        recentLengths[recentLengths.length - 1] += parseInt(this.countdowns[i].length)
+                    }
+                }
+                return {recentDates: recentDates.reverse(), recentLengths: recentLengths.reverse()}
             },
             exportTasks: function () {
                 var textArea = document.createElement("textarea");

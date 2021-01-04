@@ -5,11 +5,33 @@ const axios = require("axios")
 axios.defaults.baseURL = '/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-export default {
+const requests = {
+    dataMap: function (dataType, resData) {
+        const dataTypes = {
+            "todo": {
+                id: "task_id",
+                title: "task_title",
+                status: "task_status"
+            },
+            "countdown": {
+                id: "countdown_id",
+                taskId: "task_id",
+                length: "countdown_length",
+                startTime: "countdown_start_time"
+            }
+        }
+        return resData.map(data => {
+            const newData = Object.create(dataTypes[dataType])
+            for (const prop in newData) {
+                newData[prop] = data[newData[prop]]
+            }
+            return newData
+        })
+    },
     // task-oriented
     getTasks: function (succ, fail) {
         return axios.get("/get_tasks").then(function (res) {
-            succ(res)
+            succ(requests.dataMap("todo", res.data))
         }).catch(function (error) {
             fail(error)
         })
@@ -30,13 +52,17 @@ export default {
             userName: secret.userName,
             password: secret.password,
             task: body.task
-        }).then(succ()).catch(fail())
+        }).then(function (res) {
+            succ(res)
+        }).catch(function (error) {
+            fail(error)
+        })
     },
 
     // countdown-oriented
     getCountdowns: function (succ, fail) {
         return axios.get("/get_countdowns").then(function (res) {
-            succ(res)
+            succ(requests.dataMap("countdown", res.data))
         }).catch(function (error) {
             fail(error)
         })
@@ -46,6 +72,12 @@ export default {
             userName: secret.userName,
             password: secret.password,
             countdown: body.countdown
-        }).then(succ()).catch(fail())
+        }).then(function (res) {
+            succ(res)
+        }).catch(function (error) {
+            fail(error)
+        })
     }
 }
+
+export default requests
