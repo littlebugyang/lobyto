@@ -42,7 +42,7 @@ const requests = {
             password: secret.password,
             task: body.task
         }).then(function (res) {
-            succ(res)
+            succ(requests.dataMap("todo", res.data))
         }).catch(function (error) {
             fail(error)
         })

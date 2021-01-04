@@ -336,25 +336,19 @@
                 this.saveToLocalStorage('countdown', JSON.stringify(this.countdown))
                 this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
             },
-            addTask: function () {
-                requests.addTask({
+            addTask: async function () {
+                await requests.addTask({
                         task: {
                             title: this.newTitle
                         }
-                    }, () => {
+                    }, (data) => {
+                        this.tasks.push(data[0])
                     }, () => {
                     }
                 )
-                this.tasks.push({
-                    id: ++this.accumulatedId,
-                    done: false,
-                    title: this.newTitle,
-                    counting: false,
-                    createdTime: Date.now()
-                })
+
+                // clear the input
                 this.newTitle = ''
-                this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
-                this.saveToLocalStorage('accumulatedId', this.accumulatedId)
             },
             calculateChartStatistics: function () {
                 // calculate the statistics the chart needs
