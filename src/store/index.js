@@ -6,11 +6,20 @@ import overview from "./modules/overview"
 
 Vue.use(Vuex)
 export default new Vuex.Store({
-    state: {},
-    mutations: {},
-    actions: {},
+    state: {
+        waiting: false
+    },
+    mutations: {
+        update(state, waiting) {
+            state.waiting = waiting
+        }
+    },
+    actions: {
+        toggleWaiting(context, waiting) {
+            context.commit('update', waiting)
+        }
+    },
     modules: {
-        overview,
-        tasks
+        overview, tasks
     }
 })

@@ -26,7 +26,8 @@
                                         placeholder="What you are to do ..."></base-input>
                         </div>
                         <div class="col-2">
-                            <base-button type="primary" @click="addTask" :disabled="newTitle === ''">Add</base-button>
+                            <base-button type="primary" @click="confirmAdd" :disabled="newTitle === ''">Add
+                            </base-button>
                         </div>
                     </div>
                 </div>
@@ -92,7 +93,7 @@
     import Modal from "@/components/Modal"
     import Progress from "@/components/Progress"
     import requests from "../plugins/request"
-    import {mapState} from "vuex"
+    import {mapState, mapActions} from "vuex"
 
     export default {
         name: "Overview",
@@ -100,17 +101,10 @@
             Progress,
             BaseButton, BaseInput, TaskItem, Modal
         },
-        mounted: async function () {
+        mounted: function () {
             // get tasks and countdowns
-            await requests.getTasks((data) => {
-                this.tasks = data
-            }, () => {
-            })
-
-            await requests.getCountdowns((data) => {
-                this.countdowns = data
-            }, () => {
-            })
+            this.getTasks({request: requests.getTasks})
+            this.getCountdowns({request: requests.getCountdowns})
 
             // check if there is unsaved countdown
             this.checkCountdown()
@@ -122,7 +116,6 @@
             // todo: Take the dates with no hours into consideration
             // todo: Make the chart changes in real-time.
             let overview = this.$echarts.init(document.getElementById("overviewChart"))
-
             const statistics = this.calculateChartStatistics()
 
             overview.setOption({
@@ -147,8 +140,6 @@
         data() {
             return {
                 newTitle: "",
-                tasks: [],
-                //oldTasks: [],
 
                 // The three variables below are about countdown, but there's no need to store them.
                 showCountdown: false,
@@ -160,15 +151,12 @@
                     taskId: -1,
                     startTime: 0,
                     minutes: "15"
-                },
-                countdowns: [],
-
-                // progress of countdown
-                counting: false
+                }
             }
         },
         computed: {
             undoneTasks: function () {
+                if (!this.tasks) return []
                 return this.tasks.filter(task => task.status == 0)
             },
             sumCountdown: function () {
@@ -188,9 +176,7 @@
                 }
                 return sum
             },
-            ...mapState({
-                // todo: map overview.js state
-            })
+            ...mapState("overview", ["counting", "tasks", "countdowns"])
         },
         methods: {
             saveToLocalStorage: function (key, value) {
@@ -208,7 +194,7 @@
                 // String * Number == Number
                 return this.countdown.minutes * 60000 <= (now - this.countdown.startTime)
             },
-            checkCountdown: function(){
+            checkCountdown: function () {
                 // localStorage may contain the last unsaved countdown
                 if (typeof (Storage) === "undefined") {
                     // Firstly, check localStorage
@@ -222,10 +208,10 @@
                     // Determine whether there is unsaved countdown
                     if (this.countdown.startTime != 0) {
                         // determine whether the last unsaved countdown has expired
-                        if (this.countdownExpired(Date.now())){
+                        if (this.countdownExpired(Date.now())) {
                             // expired
                             // todo: add to countdowns
-                        }else{
+                        } else {
                             // not expired
                             // todo: hand over the countdown to progress
                         }
@@ -325,16 +311,22 @@
                 this.saveToLocalStorage("countdown", JSON.stringify(this.countdown))
                 this.saveToLocalStorage("tasks", JSON.stringify(this.tasks))
             },
-            addTask: async function () {
-                await requests.addTask({
-                        task: {
-                            title: this.newTitle
-                        }
-                    }, (data) => {
-                        this.tasks.push(data[0])
-                    }, () => {
+            confirmAdd: function () {
+                this.addTask({
+                    request: requests.addTask,
+                    data: {
+                        title: this.newTitle
                     }
-                )
+                })
+                // await requests.addTask({
+                //         task: {
+                //             title: this.newTitle
+                //         }
+                //     }, (data) => {
+                //         this.tasks.push(data[0])
+                //     }, () => {
+                //     }
+                // )
 
                 // clear the input
                 this.newTitle = ""
@@ -447,7 +439,8 @@
                 console.log("A task's countdown has been evoked: ", id)
                 this.showCountdown = true
                 this.countdown.taskId = id
-            }
+            },
+            ...mapActions("overview", ["getTasks", "getCountdowns", "addTask", "addCountdown"])
         }
     }
 </script>
