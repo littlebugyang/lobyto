@@ -28,8 +28,8 @@ export default new Router({
             }
         },
         {
-            path: "/tomatoes",
-            name: "tomatoes",
+            path: "/countdowns",
+            name: "countdowns",
             components: {
                 header: Header,
                 default: Countdowns,

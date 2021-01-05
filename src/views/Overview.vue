@@ -2,9 +2,9 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-12">
-                <!-- The current state of the tomato -->
+                <!-- The current state of the countdown -->
                 <h4 class="mb-5 mt-4">
-                    <span>Current Tomato</span>
+                    <span>Current Countdown</span>
                 </h4>
 
                 <div v-if="progress.show">
@@ -14,7 +14,7 @@
                     <base-button type="warning" @click="cancelCountdown">Cancel</base-button>
                 </div>
                 <h6 v-else class="mb-3">
-                    <span>No tomato countdown for any task right now. </span>
+                    <span>No countdown for any task right now. </span>
                 </h6>
 
                 <hr/>
@@ -39,7 +39,7 @@
                 <hr/>
 
                 <!-- View the remaining tasks -->
-                <h4 class="mb-5">
+                <h4 class="mb-5 mt-4 d-flex justify-content-between">
                     <span>Remaining Tasks</span>
                     <base-button type="primary" @click="exportTasks">export</base-button>
                 </h4>
@@ -58,7 +58,7 @@
                     <span>Today's Countdowns</span>
                 </h4>
 
-                <span>The time you have been concentrated today is: <span style="color: #fb6340; font-size: 300%">{{parseInt(sumTomato / 60)}} h {{sumTomato % 60}} m</span></span>
+                <span>The time you have been concentrated today is: <span style="color: #fb6340; font-size: 300%">{{parseInt(sumCountdown / 60)}} h {{sumCountdown % 60}} m</span></span>
 
                 <hr/>
 
@@ -138,7 +138,7 @@
             overview.setOption({
                 color: '#5e72e4',
                 title: {
-                    text: 'Tomato sums in recent days',
+                    text: 'Countdown sums in recent days',
                     left: 'center'
                 },
                 xAxis: {
@@ -179,7 +179,7 @@
                 },
                 countdowns: [],
 
-                // progress of tomato
+                // progress of countdown
                 progress: {
                     show: false,
                     type: 'primary',
@@ -195,7 +195,7 @@
             undoneTasks: function () {
                 return this.tasks.filter(task => task.status == 0)
             },
-            sumTomato: function () {
+            sumCountdown: function () {
                 let sum = 0
 
                 let now = new Date()
@@ -205,7 +205,7 @@
 
                 for (let i = 0; i < this.countdowns.length; ++i) {
                     let startTime = new Date(this.countdowns[i].startTime)
-                    // This is today's tomato.
+                    // This is today's countdown.
                     if (startTime.getFullYear() === todayYear && startTime.getMonth() === todayMonth && startTime.getDate() === todayDate) {
                         sum += parseInt(this.countdowns[i].length)
                     }
@@ -252,7 +252,7 @@
                         // show notification
                         if (window.Notification && Notification.permission !== 'denied') {
                             Notification.requestPermission(function (status) {
-                                new Notification("Tomato Countdown", {
+                                new Notification("Lobyto Countdown", {
                                     body: "Time is up!!!!",
                                     icon: 'http://img3.imgtn.bdimg.com/it/u=3891266103,2994336694&fm=26&gp=0.jpg'
                                 })
@@ -301,7 +301,7 @@
                 // finish countdown ahead
                 let newMinutes = Math.floor((Date.now() - this.countdown.startTime) / 60000)
                 if (1 > newMinutes) {
-                    // tomato of less than 1 minute does not count
+                    // countdown of less than 1 minute does not count
                     return
                 }
 

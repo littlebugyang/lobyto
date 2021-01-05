@@ -4,10 +4,11 @@
             <div class="col-lg-12">
 
                 <!-- View the remaining tasks -->
-                <h4 class="mb-5 mt-4">
+                <h4 class="mb-5 mt-4 d-flex justify-content-between">
                     <span>Remaining Tasks</span>
                     <base-button type="primary" @click="exportTasks">export</base-button>
                 </h4>
+
 
                 <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
                            :counting.sync="task.counting"
@@ -93,7 +94,7 @@
                 },
                 countdowns: [],
 
-                // progress of tomato
+                // progress of countdown
                 progress: {
                     show: false,
                     type: 'primary',

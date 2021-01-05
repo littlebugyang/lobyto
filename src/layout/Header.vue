@@ -25,7 +25,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link nav-link-icon" href="#/tomatoes">
+                    <a class="nav-link nav-link-icon" href="#/countdowns">
                         Countdowns
                     </a>
                 </li>

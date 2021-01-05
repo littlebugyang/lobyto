@@ -9,7 +9,7 @@
         name: "Countdowns",
         data() {
             return {
-                title: 'Tomatoes'
+                title: 'Countdowns'
             }
         }
     }
