@@ -6,13 +6,8 @@
                 <h4 class="mb-5 mt-4">
                     <span>Current Countdown</span>
                 </h4>
+                <progress v-if="counting" :countdown="countdown"></progress>
 
-                <div v-if="progress.show">
-                    <h6><span>{{tasks[getTaskIndexById(countdown.taskId)].title}}</span></h6>
-                    <base-progress :type="progress.type" :value="progress.value"></base-progress>
-                    <base-button type="default" @click="finishCountdown">Finish Ahead</base-button>
-                    <base-button type="warning" @click="cancelCountdown">Cancel</base-button>
-                </div>
                 <h6 v-else class="mb-3">
                     <span>No countdown for any task right now. </span>
                 </h6>
@@ -95,20 +90,17 @@
     import BaseButton from "@/components/BaseButton"
     import TaskItem from "@/components/TaskItem"
     import Modal from "@/components/Modal"
+    import Progress from "@/components/Progress"
     import requests from "../plugins/request"
+    import {mapState} from "vuex"
 
     export default {
         name: "Overview",
         components: {
+            Progress,
             BaseButton, BaseInput, TaskItem, Modal
         },
         mounted: async function () {
-            // load data from localStorage
-            if (typeof (Storage) === "undefined") {
-                console.log("Local Storage not available. ")
-                return
-            }
-
             // get tasks and countdowns
             await requests.getTasks((data) => {
                 this.tasks = data
@@ -120,10 +112,8 @@
             }, () => {
             })
 
-            // localStorage may contain the last unsaved countdown
-            if (localStorage.getItem('countdown') !== null) {
-                this.countdown = JSON.parse(localStorage.getItem('countdown'))
-            }
+            // check if there is unsaved countdown
+            this.checkCountdown()
 
             // Continues the last countdown.
             this.loadCountdown()
@@ -131,67 +121,53 @@
             // initialize echarts
             // todo: Take the dates with no hours into consideration
             // todo: Make the chart changes in real-time.
-            let overview = this.$echarts.init(document.getElementById('overviewChart'))
+            let overview = this.$echarts.init(document.getElementById("overviewChart"))
 
             const statistics = this.calculateChartStatistics()
 
             overview.setOption({
-                color: '#5e72e4',
+                color: "#5e72e4",
                 title: {
-                    text: 'Countdown sums in recent days',
-                    left: 'center'
+                    text: "Countdown sums in recent days",
+                    left: "center"
                 },
                 xAxis: {
-                    name: 'date',
+                    name: "date",
                     data: statistics.recentDates
                 },
                 yAxis: {
-                    name: 'hours'
+                    name: "hours"
                 },
                 series: [{
-                    type: 'bar',
+                    type: "bar",
                     data: statistics.recentLengths.map(minutes => new Number(minutes / 60.0).toFixed(2))
                 }]
             })
         },
-        beforeDestroy() {
-            // avoid duplicate countdown
-            console.log("Clear the interval with id: ", this.intervalId)
-            clearInterval(this.intervalId)
-        },
         data() {
             return {
-                newTitle: '',
+                newTitle: "",
                 tasks: [],
                 //oldTasks: [],
 
                 // The three variables below are about countdown, but there's no need to store them.
                 showCountdown: false,
-                presetCountdownLengths: ['2', '15', '25', '35', '45', '60', '90', '120', '180'],
-                intervalId: 0,
+                presetCountdownLengths: ["2", "15", "25", "35", "45", "60", "90", "120", "180"],
 
                 // The variables below are about countdown. They should be stored in local storage.
                 // todo: change object variable name to "currentCountdown"
                 countdown: {
                     taskId: -1,
                     startTime: 0,
-                    minutes: '15'
+                    minutes: "15"
                 },
                 countdowns: [],
 
                 // progress of countdown
-                progress: {
-                    show: false,
-                    type: 'primary',
-                    value: 0
-                }
+                counting: false
             }
         },
         computed: {
-            // use computed to avoid redundant traversal
-            doneTasks: function () {
-                return this.tasks.filter(task => task.status == 1)
-            },
             undoneTasks: function () {
                 return this.tasks.filter(task => task.status == 0)
             },
@@ -211,7 +187,10 @@
                     }
                 }
                 return sum
-            }
+            },
+            ...mapState({
+                // todo: map overview.js state
+            })
         },
         methods: {
             saveToLocalStorage: function (key, value) {
@@ -226,8 +205,32 @@
                 return -1
             },
             countdownExpired: function (now) {
-                // (type string) * (type number) yields (type number) ??????
+                // String * Number == Number
                 return this.countdown.minutes * 60000 <= (now - this.countdown.startTime)
+            },
+            checkCountdown: function(){
+                // localStorage may contain the last unsaved countdown
+                if (typeof (Storage) === "undefined") {
+                    // Firstly, check localStorage
+                    console.log("Local Storage not available. ")
+                    return
+                }
+                if (localStorage.getItem("countdown") !== null) {
+                    // Secondly, deal with the first-open scenario
+                    this.countdown = JSON.parse(localStorage.getItem("countdown"))
+
+                    // Determine whether there is unsaved countdown
+                    if (this.countdown.startTime != 0) {
+                        // determine whether the last unsaved countdown has expired
+                        if (this.countdownExpired(Date.now())){
+                            // expired
+                            // todo: add to countdowns
+                        }else{
+                            // not expired
+                            // todo: hand over the countdown to progress
+                        }
+                    }
+                }
             },
             loadCountdown: function () {
                 // No countdown.startTime saved
@@ -250,11 +253,11 @@
                         _this.cancelCountdown()
 
                         // show notification
-                        if (window.Notification && Notification.permission !== 'denied') {
+                        if (window.Notification && Notification.permission !== "denied") {
                             Notification.requestPermission(function (status) {
                                 new Notification("Lobyto Countdown", {
                                     body: "Time is up!!!!",
-                                    icon: 'http://img3.imgtn.bdimg.com/it/u=3891266103,2994336694&fm=26&gp=0.jpg'
+                                    icon: "http://img3.imgtn.bdimg.com/it/u=3891266103,2994336694&fm=26&gp=0.jpg"
                                 })
                             })
                         }
@@ -265,17 +268,17 @@
                         _this.progress.show = true
                     }
                 }, 1000)
-                console.log('Start an interval with id: ', this.intervalId)
+                console.log("Start an interval with id: ", this.intervalId)
             },
             startCountdown: function () {
                 console.log(`Countdown for task ${this.countdown.taskId} started, with a countdown of ${this.countdown.minutes} minutes. `)
                 this.countdown.startTime = Date.now()
                 this.showCountdown = false
                 // Save the countdown settings to the local storage.
-                this.saveToLocalStorage('countdown', JSON.stringify(this.countdown))
+                this.saveToLocalStorage("countdown", JSON.stringify(this.countdown))
                 this.loadCountdown()
                 this.tasks[this.getTaskIndexById(this.countdown.taskId)].counting = true
-                this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
+                this.saveToLocalStorage("tasks", JSON.stringify(this.tasks))
             },
             addCountdown: function () {
                 this.countdowns.push({
@@ -295,7 +298,7 @@
                     () => {
                     }, () => {
                     })
-                this.saveToLocalStorage('countdowns', JSON.stringify(this.countdowns))
+                this.saveToLocalStorage("countdowns", JSON.stringify(this.countdowns))
             },
             finishCountdown: function () {
                 // finish countdown ahead
@@ -305,7 +308,7 @@
                     return
                 }
 
-                this.countdown.minutes = '' + newMinutes
+                this.countdown.minutes = "" + newMinutes
                 this.addCountdown()
                 this.cancelCountdown()
             },
@@ -318,9 +321,9 @@
                 this.progress.show = false
                 this.countdown.startTime = 0
                 this.countdown.taskId = -1
-                this.countdown.minutes = '15'
-                this.saveToLocalStorage('countdown', JSON.stringify(this.countdown))
-                this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
+                this.countdown.minutes = "15"
+                this.saveToLocalStorage("countdown", JSON.stringify(this.countdown))
+                this.saveToLocalStorage("tasks", JSON.stringify(this.tasks))
             },
             addTask: async function () {
                 await requests.addTask({
@@ -334,7 +337,7 @@
                 )
 
                 // clear the input
-                this.newTitle = ''
+                this.newTitle = ""
             },
             calculateChartStatistics: function () {
                 // calculate the statistics the chart needs
@@ -361,7 +364,7 @@
                 return {recentDates: recentDates.reverse(), recentLengths: recentLengths.reverse()}
             },
             exportTasks: function () {
-                var textArea = document.createElement("textarea");
+                var textArea = document.createElement("textarea")
 
                 //
                 // *** This styling is an extra step which is likely not required. ***
@@ -380,25 +383,25 @@
                 //
 
                 // Place in top-left corner of screen regardless of scroll position.
-                textArea.style.position = 'fixed';
-                textArea.style.top = 0;
-                textArea.style.left = 0;
+                textArea.style.position = "fixed"
+                textArea.style.top = 0
+                textArea.style.left = 0
 
                 // Ensure it has a small width and height. Setting to 1px / 1em
                 // doesn't work as this gives a negative w/h on some browsers.
-                textArea.style.width = '2em';
-                textArea.style.height = '2em';
+                textArea.style.width = "2em"
+                textArea.style.height = "2em"
 
                 // We don't need padding, reducing the size if it does flash render.
-                textArea.style.padding = 0;
+                textArea.style.padding = 0
 
                 // Clean up any borders.
-                textArea.style.border = 'none';
-                textArea.style.outline = 'none';
-                textArea.style.boxShadow = 'none';
+                textArea.style.border = "none"
+                textArea.style.outline = "none"
+                textArea.style.boxShadow = "none"
 
                 // Avoid flash of white box if rendered for any reason.
-                textArea.style.background = 'transparent';
+                textArea.style.background = "transparent"
 
                 // copy markdown content to clipboard
                 // let toBeCopied = ''
@@ -413,19 +416,19 @@
                 toBeCopied.tasks = this.tasks
                 textArea.value = `\`\`\`json\n${JSON.stringify(toBeCopied)}`
 
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
+                document.body.appendChild(textArea)
+                textArea.focus()
+                textArea.select()
 
                 try {
-                    var successful = document.execCommand('copy');
-                    var msg = successful ? 'successful' : 'unsuccessful';
-                    console.log('Copying text command was ' + msg);
+                    var successful = document.execCommand("copy")
+                    var msg = successful ? "successful" : "unsuccessful"
+                    console.log("Copying text command was " + msg)
                 } catch (err) {
-                    console.log('Oops, unable to copy');
+                    console.log("Oops, unable to copy")
                 }
 
-                document.body.removeChild(textArea);
+                document.body.removeChild(textArea)
             },
             handleNewTaskInput: function (val) {
                 this.newTitle = val
@@ -433,7 +436,7 @@
             handleTaskToggle: function (id) {
                 let i = this.getTaskIndexById(id)
                 this.tasks[i].done = !this.tasks[i].done
-                this.saveToLocalStorage('tasks', JSON.stringify(this.tasks))
+                this.saveToLocalStorage("tasks", JSON.stringify(this.tasks))
             },
             handleTaskDeleted: function (id) {
                 // todo: implement the api of deleting the todo

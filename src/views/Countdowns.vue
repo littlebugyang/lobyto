@@ -5,12 +5,16 @@
 </template>
 
 <script>
+    import {mapState} from "vuex"
+
     export default {
         name: "Countdowns",
         data() {
-            return {
-                title: 'Countdowns'
-            }
+            return {}
+        },
+        computed: {
+            ...mapState({
+            })
         }
     }
 </script>

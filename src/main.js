@@ -15,17 +15,21 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import Argon from "./plugins/argon-kit";
-import './registerServiceWorker'
-let echarts = require('echarts')
+import Vue from "vue"
+import App from "./App.vue"
+import router from "./router"
+import store from "./store/index.js"
+import Argon from "./plugins/argon-kit"
+import "./registerServiceWorker"
+
+let echarts = require("echarts")
 
 Vue.prototype.$echarts = echarts
-Vue.config.productionTip = false;
-Vue.use(Argon);
+Vue.config.productionTip = false
+
+Vue.use(Argon)
 new Vue({
-  router,
-  render: h => h(App)
-}).$mount("#app");
+    router,
+    store,
+    render: h => h(App)
+}).$mount("#app")
