@@ -6,8 +6,8 @@
                 <h4 class="mb-5 mt-4">
                     <span>Current Countdown</span>
                 </h4>
-                <progress v-if="counting" :countdown="countdown"></progress>
 
+                <countdown-progress v-if="counting" :countdown="countdown"></countdown-progress>
                 <h6 v-else class="mb-3">
                     <span>No countdown for any task right now. </span>
                 </h6>
@@ -42,7 +42,6 @@
 
                 <task-item v-for="task in undoneTasks" :key="task.id" :done="task.status===1" :id="task.id"
                            :title="task.title"
-                           :counting.sync="task.counting"
                            v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted"
                            v-on:evoke-countdown="handleCountdownEvoked">
                 </task-item>
@@ -74,7 +73,7 @@
             <div class="container justify-content-center">
                 <div class="row">
                     <base-radio class="col-4" v-for="min in presetCountdownLengths" :key="min" :name="min"
-                                v-model="countdown.minutes">
+                                v-model="countdown.length">
                         {{`${min}min`}}
                     </base-radio>
                 </div>
@@ -91,15 +90,14 @@
     import BaseButton from "@/components/BaseButton"
     import TaskItem from "@/components/TaskItem"
     import Modal from "@/components/Modal"
-    import Progress from "@/components/Progress"
+    import CountdownProgress from "../components/CountdownProgress"
     import requests from "../plugins/request"
     import {mapState, mapActions} from "vuex"
 
     export default {
         name: "Overview",
         components: {
-            Progress,
-            BaseButton, BaseInput, TaskItem, Modal
+            CountdownProgress, BaseButton, BaseInput, TaskItem, Modal
         },
         mounted: function () {
             // get tasks and countdowns
@@ -108,9 +106,6 @@
 
             // check if there is unsaved countdown
             this.checkCountdown()
-
-            // Continues the last countdown.
-            this.loadCountdown()
 
             // initialize echarts
             // todo: Take the dates with no hours into consideration
@@ -150,7 +145,7 @@
                 countdown: {
                     taskId: -1,
                     startTime: 0,
-                    minutes: "15"
+                    length: "15"
                 }
             }
         },
@@ -167,6 +162,7 @@
                 let todayMonth = now.getMonth()
                 let todayDate = now.getDate()
 
+                return 0
                 for (let i = 0; i < this.countdowns.length; ++i) {
                     let startTime = new Date(this.countdowns[i].startTime)
                     // This is today's countdown.
@@ -192,7 +188,7 @@
             },
             countdownExpired: function (now) {
                 // String * Number == Number
-                return this.countdown.minutes * 60000 <= (now - this.countdown.startTime)
+                return this.countdown.length * 60000 <= (now - this.countdown.startTime)
             },
             checkCountdown: function () {
                 // localStorage may contain the last unsaved countdown
@@ -208,12 +204,22 @@
                     // Determine whether there is unsaved countdown
                     if (this.countdown.startTime != 0) {
                         // determine whether the last unsaved countdown has expired
-                        if (this.countdownExpired(Date.now())) {
-                            // expired
-                            // todo: add to countdowns
+                        const expired = this.countdown.length * 60000 <= (Date.now() - this.countdown.startTime)
+                        if (expired) {
+                            console.log("This countdown has expired. ")
+                            this.addCountdown({
+                                request: requests.addCountdown,
+                                data: {
+                                    countdown: this.countdown
+                                }
+                            })
+                            this.countdown.startTime = 0
+                            this.countdown.taskId = -1
+                            this.countdown.length = "15"
+                            this.saveToLocalStorage("countdown", JSON.stringify(this.countdown))
                         } else {
-                            // not expired
-                            // todo: hand over the countdown to progress
+                            // The countdown has not expired. Continue.
+                            this.toggleCounting(true)
                         }
                     }
                 }
@@ -257,16 +263,19 @@
                 console.log("Start an interval with id: ", this.intervalId)
             },
             startCountdown: function () {
-                console.log(`Countdown for task ${this.countdown.taskId} started, with a countdown of ${this.countdown.minutes} minutes. `)
+                // Update this.countdown.startTime
                 this.countdown.startTime = Date.now()
+
+                // Show countdown selection, NOT countdown progress
                 this.showCountdown = false
+
                 // Save the countdown settings to the local storage.
-                this.saveToLocalStorage("countdown", JSON.stringify(this.countdown))
-                this.loadCountdown()
-                this.tasks[this.getTaskIndexById(this.countdown.taskId)].counting = true
-                this.saveToLocalStorage("tasks", JSON.stringify(this.tasks))
+                localStorage.setItem("countdown", JSON.stringify(this.countdown))
+
+                // Pass countdown to progress and show progress
+                this.toggleCounting(true)
             },
-            addCountdown: function () {
+            addCountdown0: function () {
                 this.countdowns.push({
                     taskId: this.countdown.taskId,
                     minutes: this.countdown.minutes,
@@ -315,18 +324,9 @@
                 this.addTask({
                     request: requests.addTask,
                     data: {
-                        title: this.newTitle
+                        task: {title: this.newTitle}
                     }
                 })
-                // await requests.addTask({
-                //         task: {
-                //             title: this.newTitle
-                //         }
-                //     }, (data) => {
-                //         this.tasks.push(data[0])
-                //     }, () => {
-                //     }
-                // )
 
                 // clear the input
                 this.newTitle = ""
@@ -396,14 +396,16 @@
                 textArea.style.background = "transparent"
 
                 // copy markdown content to clipboard
-                // let toBeCopied = ''
-                // for (let i = 0; i < this.tasks.length; ++i) {
-                //     let task = this.tasks[i]
-                //     toBeCopied += `- [${task.done ? 'x' : ' '}] ${task.title}\n`
-                // }
-                // textArea.value = toBeCopied
-
                 let toBeCopied = {}
+
+                // to-do form
+                /* for (let i = 0; i < this.tasks.length; ++i) {
+                     let task = this.tasks[i]
+                     toBeCopied += `- [${task.done ? 'x' : ' '}] ${task.title}\n`
+                 }
+                 textArea.value = toBeCopied */
+
+                // json form
                 toBeCopied.countdowns = this.countdowns
                 toBeCopied.tasks = this.tasks
                 textArea.value = `\`\`\`json\n${JSON.stringify(toBeCopied)}`
@@ -440,7 +442,7 @@
                 this.showCountdown = true
                 this.countdown.taskId = id
             },
-            ...mapActions("overview", ["getTasks", "getCountdowns", "addTask", "addCountdown"])
+            ...mapActions("overview", ["getTasks", "getCountdowns", "addTask", "addCountdown", "toggleCounting"])
         }
     }
 </script>

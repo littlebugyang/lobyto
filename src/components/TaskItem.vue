@@ -33,7 +33,10 @@
             done: Boolean,
             id: Number,
             title: String,
-            counting: Boolean
+            counting: {
+                type: Boolean,
+                default: false
+            }
         },
         methods: {
             toggleTask: function () {

@@ -1,26 +1,24 @@
 <template>
     <div>
-        <h6><span>{{countdown.title}}</span></h6>
-        <base-progress :type="type" :value="value"></base-progress>
+        <h6><span>todo: Title</span></h6>
+        <base-progress type="primary" :value="value"></base-progress>
         <base-button type="default" @click="stopCountdown">Finish Ahead</base-button>
         <base-button type="warning" @click="cancelCountdown">Cancel</base-button>
     </div>
 </template>
 
 <script>
-    import BaseProgress from "@/components/BaseProgress"
-    import BaseButton from "@/components/BaseButton"
+    import BaseProgress from "./BaseProgress"
+    import BaseButton from "./BaseButton"
+    import requests from "../plugins/request"
+    import {mapActions} from "vuex"
 
     export default {
-        name: "Progress",
+        name: "CountdownProgress",
         components: {
             BaseProgress, BaseButton
         },
         props: {
-            type: {
-                type: String,
-                default: "primary"
-            },
             countdown: Object
         },
         data() {
@@ -29,9 +27,16 @@
                 intervalId: 0
             }
         },
+        computed: {
+            title: function () {
+                return 0
+            }
+        },
         mounted() {
-            // When Progress.vue is mounted, there must be countdown passed as prop
-            this.intervalId = setInterval(function () {
+            console.log("Progress mounted. ", this.countdown)
+            // When it is mounted, there must be countdown passed as prop.
+            // Just set an interval for this countdown.
+            this.intervalId = setInterval(() => {
                 if (this.countdownExpired(Date.now())) {
                     this.finishCountdown()
 
@@ -45,8 +50,8 @@
                         })
                     }
                 } else {
-                    let secondsLeft = this.countdown.minutes * 60.0 - (Date.now() - this.countdown.startTime) / 1000.0
-                    let percentage = (1.0 - secondsLeft / (this.countdown.minutes * 60.0)) * 100
+                    let secondsLeft = this.countdown.length * 60.0 - (Date.now() - this.countdown.startTime) / 1000.0
+                    let percentage = (1.0 - secondsLeft / (this.countdown.length * 60.0)) * 100
                     this.value = parseInt(percentage)
                     // this.show = true
                 }
@@ -61,37 +66,42 @@
         methods: {
             countdownExpired: function (now) {
                 // String * Number = Number
-                return this.countdown.minutes * 60000 <= (now - this.countdown.startTime)
+                return this.countdown.length * 60000 <= (now - this.countdown.startTime)
             },
-            stopCountdown: function(){
+            stopCountdown: function () {
                 // "Stop" means "interrupt"
                 let newMinutes = Math.floor((Date.now() - this.countdown.startTime) / 60000)
-                if (1 > newMinutes) {
-                    // countdown of less than 1 minute does not count
-                    return
-                }
-                this.countdown.minutes = "" + newMinutes
+                // if (1 > newMinutes) {
+                //     // countdown of less than 1 minute does not count
+                //     return
+                // }
+                this.countdown.length = "" + newMinutes
                 this.finishCountdown()
             },
             finishCountdown: function () {
                 // "Finish" means "completely done"
-                // todo: upload countdown and add countdown to state
-
-                // recover countdown
-                this.intervalId = 0
-                this.progress.value = 0
-                this.progress.show = false
-                this.countdown.startTime = 0
-                this.countdown.taskId = -1
-                this.countdown.minutes = "15"
-                this.saveToLocalStorage("countdown", JSON.stringify(this.countdown))
+                // Upload countdown
+                this.addCountdown({
+                    request: requests.addCountdown,
+                    data: {
+                        countdown: this.countdown
+                    }
+                })
                 this.cancelCountdown()
             },
             cancelCountdown: function () {
                 console.log("Clear the interval with id: ", this.intervalId)
                 clearInterval(this.intervalId)
-                // todo: tell parent to hide the progress
-            }
+                // recover countdown
+                this.intervalId = 0
+                this.value = 0
+                this.countdown.startTime = 0
+                this.countdown.taskId = -1
+                this.countdown.length = "15"
+                localStorage.setItem("countdown", JSON.stringify(this.countdown))
+                this.toggleCounting(false)
+            },
+            ...mapActions("overview", ["addCountdown", "toggleCounting"])
         }
     }
 </script>

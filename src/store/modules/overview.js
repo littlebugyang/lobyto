@@ -35,11 +35,7 @@ export default {
         },
         async addTask(context, payload) {
             // todo: make index.js waiting true
-            await payload.request({
-                task: {
-                    title: payload.data.title
-                }
-            }, data => {
+            await payload.request(payload.data, data => {
                 context.commit('push', {prop: 'tasks', data: data[0]})
             }, () => {
             })
@@ -47,11 +43,17 @@ export default {
         },
         async addCountdown(context, payload) {
             // todo: make index.js waiting true
-            await payload.request(data => {
+            await payload.request(payload.data, data => {
                 context.commit('update', {prop: 'countdowns', data: data[0]})
             }, () => {
             })
             // todo: make index.js waiting false
         },
+        toggleCounting(context, counting) {
+            context.commit('update', {prop: 'counting', data: counting})
+        },
+        getTaskTitleById(context, id) {
+
+        }
     }
 }
