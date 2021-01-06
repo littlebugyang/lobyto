@@ -4,7 +4,14 @@ export default {
         // determine whether to show progress
         counting: false,
         tasks: [],
-        countdowns: []
+        countdowns: [],
+
+        // one universal modal for Overview.vue
+        modal: {
+            show: false,
+            title: "",
+            taskId: 0
+        }
     },
     getters: {},
     mutations: {
@@ -18,39 +25,29 @@ export default {
     },
     actions: {
         async getTasks(context, payload) {
-            // todo: make index.js waiting true
             await payload.request(data => {
                 context.commit("update", {prop: "tasks", data})
             }, () => {
             })
-            // todo: make index.js waiting false
-        },
-        async getCountdowns(context, payload) {
-            // todo: make index.js waiting true
-            await payload.request(data => {
-                context.commit("update", {prop: "countdowns", data})
-            }, () => {
-            })
-            // todo: make index.js waiting false
         },
         async addTask(context, payload) {
-            // todo: make index.js waiting true
             await payload.request(payload.data, data => {
                 context.commit("push", {prop: "tasks", data: data[0]})
             }, () => {
             })
-            // todo: make index.js waiting false
         },
-        async addCountdown(context, payload) {
-            // todo: make index.js waiting true
+        async updateTask(context, payload) {
             await payload.request(payload.data, data => {
-                context.commit("update", {prop: "countdowns", data: data[0]})
+                const tasks = context.state.tasks
+                for (let i = 0; i < tasks.length; ++i) {
+                    if (tasks[i].id === id) {
+                        tasks[i] = data[0]
+                        break
+                    }
+                }
+                context.commit("update", {prop: "tasks", data: tasks})
             }, () => {
             })
-            // todo: make index.js waiting false
-        },
-        toggleCounting(context, counting) {
-            context.commit("update", {prop: "counting", data: counting})
         },
         getTaskTitleById(context, id) {
             const tasks = context.state.tasks
@@ -60,6 +57,24 @@ export default {
                 }
             }
             return ""
+        },
+        async getCountdowns(context, payload) {
+            await payload.request(data => {
+                context.commit("update", {prop: "countdowns", data})
+            }, () => {
+            })
+        },
+        async addCountdown(context, payload) {
+            await payload.request(payload.data, data => {
+                context.commit("update", {prop: "countdowns", data: data[0]})
+            }, () => {
+            })
+        },
+        toggleCounting(context, counting) {
+            context.commit("update", {prop: "counting", data: counting})
+        },
+        toggleModal(context, modal) {
+            context.commit("update", {prop: "modal", data: modal})
         }
     }
 }

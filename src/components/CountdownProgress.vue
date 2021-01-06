@@ -18,18 +18,18 @@
         components: {
             BaseProgress, BaseButton
         },
-        props: {
-            countdown: Object
-        },
         data() {
             return {
                 value: 0,
                 intervalId: 0,
-                title: ""
+                title: "",
+                countdown:{}
             }
         },
         mounted() {
             console.log("Progress mounted. ", this.countdown)
+            this.countdown = JSON.parse(localStorage.getItem("countdown"))
+            // todo: unable to load title, because tasks is empty when this statement performed
             this.getTaskTitleById(this.countdown.taskId).then(title => this.title = title)
             // When it is mounted, there must be countdown passed as prop.
             // Just set an interval for this countdown.

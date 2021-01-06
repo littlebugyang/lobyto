@@ -7,7 +7,7 @@
                     <span>Current Countdown</span>
                 </h4>
 
-                <countdown-progress v-if="counting" :countdown="countdown"></countdown-progress>
+                <countdown-progress v-if="counting"></countdown-progress>
                 <h6 v-else class="mb-3">
                     <span>No countdown for any task right now. </span>
                 </h6>
@@ -65,39 +65,23 @@
 
             </div>
         </div>
-        <!-- The modal for setting countdown -->
-        <modal v-if="showCountdown && countdown.taskId !== -1" :show.sync="showCountdown">
-            <template slot="header">
-                <h5 class="modal-title">Countdown for {{tasks[getTaskIndexById(countdown.taskId)].title}}</h5>
-            </template>
-            <div class="container justify-content-center">
-                <div class="row">
-                    <base-radio class="col-4" v-for="min in presetCountdownLengths" :key="min" :name="min"
-                                v-model="countdown.length">
-                        {{`${min}min`}}
-                    </base-radio>
-                </div>
-            </div>
-            <template slot="footer">
-                <base-button type="primary" @click="startCountdown">Apply</base-button>
-            </template>
-        </modal>
+        <countdown-modal></countdown-modal>
     </div>
 </template>
 
 <script>
     import BaseInput from "@/components/BaseInput"
     import BaseButton from "@/components/BaseButton"
-    import TaskItem from "@/components/TaskItem"
-    import Modal from "@/components/Modal"
+    import TaskItem from "../components/TaskItem"
     import CountdownProgress from "../components/CountdownProgress"
+    import CountdownModal from "../components/CountdownModal"
     import requests from "../plugins/request"
     import {mapState, mapActions} from "vuex"
 
     export default {
         name: "Overview",
         components: {
-            CountdownProgress, BaseButton, BaseInput, TaskItem, Modal
+            CountdownModal, CountdownProgress, BaseButton, BaseInput, TaskItem
         },
         mounted: function () {
             // get tasks and countdowns
@@ -137,7 +121,7 @@
                 newTitle: "",
 
                 // The three variables below are about countdown, but there's no need to store them.
-                showCountdown: false,
+                showModal: false,
                 presetCountdownLengths: ["2", "15", "25", "35", "45", "60", "90", "120", "180"],
 
                 // The variables below are about countdown. They should be stored in local storage.
@@ -172,7 +156,7 @@
                 }
                 return sum
             },
-            ...mapState("overview", ["counting", "tasks", "countdowns"])
+            ...mapState("overview", ["counting", "tasks", "countdowns", "modal"])
         },
         methods: {
             saveToLocalStorage: function (key, value) {
@@ -263,6 +247,8 @@
                 console.log("Start an interval with id: ", this.intervalId)
             },
             startCountdown: function () {
+                console.log("startCountdown from Overview.vue")
+                return
                 // Update this.countdown.startTime
                 this.countdown.startTime = Date.now()
 
@@ -439,7 +425,7 @@
             },
             handleCountdownEvoked: function (id) {
                 console.log("A task's countdown has been evoked: ", id)
-                this.showCountdown = true
+                this.showModal = true
                 this.countdown.taskId = id
             },
             ...mapActions("overview", ["getTasks", "getCountdowns", "addTask", "addCountdown", "toggleCounting"])

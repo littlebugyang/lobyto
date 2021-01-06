@@ -6,6 +6,7 @@ axios.defaults.baseURL = '/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 const requests = {
+    // todo: modify state.waiting before every web request
     dataMap: function (dataType, resData) {
         const dataTypes = {
             "task": {

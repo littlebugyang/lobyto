@@ -27,8 +27,10 @@
 </template>
 
 <script>
+    import {mapActions} from "vuex"
+
     export default {
-        name: "task-item",
+        name: "TaskItem",
         props: {
             done: Boolean,
             id: Number,
@@ -40,14 +42,23 @@
         },
         methods: {
             toggleTask: function () {
-                this.$emit('task-toggled', this.id)
+                this.$emit("task-toggled", this.id)
             },
             deleteTask: function () {
-                this.$emit('task-deleted', this.id)
+                this.$emit("task-deleted", this.id)
             },
             evokeCountdown: function () {
-                this.$emit('evoke-countdown', this.id)
-            }
+                // this.$emit("evoke-countdown", this.id)
+                this.toggleModal({
+                    show: true,
+                    title: this.title,
+                    taskId: this.id
+                })
+            },
+            startCountdown: function () {
+                console.log("startCountdown from TaskItem.vue")
+            },
+            ...mapActions("overview", ["toggleModal"])
         }
     }
 </script>

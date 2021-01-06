@@ -1,7 +1,8 @@
-const webpack = require('webpack');
+const webpack = require("webpack")
 
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
+    publicPath: process.env.NODE_ENV === "production" ? "./" : "/",
+    runtimeCompiler: true,
     devServer: {
         proxy: {
             "^/api/": {
@@ -21,14 +22,14 @@ module.exports = {
         ]
     },
     pwa: {
-        name: 'Vue Argon Design',
-        themeColor: '#172b4d',
-        msTileColor: '#172b4d',
-        appleMobileWebAppCapable: 'yes',
-        appleMobileWebAppStatusBarStyle: '#172b4d'
+        name: "Vue Argon Design",
+        themeColor: "#172b4d",
+        msTileColor: "#172b4d",
+        appleMobileWebAppCapable: "yes",
+        appleMobileWebAppStatusBarStyle: "#172b4d"
     },
     css: {
         // Enable CSS source maps.
-        sourceMap: process.env.NODE_ENV !== 'production'
+        sourceMap: process.env.NODE_ENV !== "production"
     }
 }
