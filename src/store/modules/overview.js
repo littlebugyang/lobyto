@@ -20,7 +20,7 @@ export default {
         async getTasks(context, payload) {
             // todo: make index.js waiting true
             await payload.request(data => {
-                context.commit('update', {prop: 'tasks', data})
+                context.commit("update", {prop: "tasks", data})
             }, () => {
             })
             // todo: make index.js waiting false
@@ -28,7 +28,7 @@ export default {
         async getCountdowns(context, payload) {
             // todo: make index.js waiting true
             await payload.request(data => {
-                context.commit('update', {prop: 'countdowns', data})
+                context.commit("update", {prop: "countdowns", data})
             }, () => {
             })
             // todo: make index.js waiting false
@@ -36,7 +36,7 @@ export default {
         async addTask(context, payload) {
             // todo: make index.js waiting true
             await payload.request(payload.data, data => {
-                context.commit('push', {prop: 'tasks', data: data[0]})
+                context.commit("push", {prop: "tasks", data: data[0]})
             }, () => {
             })
             // todo: make index.js waiting false
@@ -44,16 +44,22 @@ export default {
         async addCountdown(context, payload) {
             // todo: make index.js waiting true
             await payload.request(payload.data, data => {
-                context.commit('update', {prop: 'countdowns', data: data[0]})
+                context.commit("update", {prop: "countdowns", data: data[0]})
             }, () => {
             })
             // todo: make index.js waiting false
         },
         toggleCounting(context, counting) {
-            context.commit('update', {prop: 'counting', data: counting})
+            context.commit("update", {prop: "counting", data: counting})
         },
         getTaskTitleById(context, id) {
-
+            const tasks = context.state.tasks
+            for (let i = 0; i < tasks.length; ++i) {
+                if (tasks[i].id === id) {
+                    return tasks[i].title
+                }
+            }
+            return ""
         }
     }
 }

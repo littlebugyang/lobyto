@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h6><span>todo: Title</span></h6>
+        <h6><span>{{title}}</span></h6>
         <base-progress type="primary" :value="value"></base-progress>
         <base-button type="default" @click="stopCountdown">Finish Ahead</base-button>
         <base-button type="warning" @click="cancelCountdown">Cancel</base-button>
@@ -24,16 +24,13 @@
         data() {
             return {
                 value: 0,
-                intervalId: 0
-            }
-        },
-        computed: {
-            title: function () {
-                return 0
+                intervalId: 0,
+                title: ""
             }
         },
         mounted() {
             console.log("Progress mounted. ", this.countdown)
+            this.getTaskTitleById(this.countdown.taskId).then(title => this.title = title)
             // When it is mounted, there must be countdown passed as prop.
             // Just set an interval for this countdown.
             this.intervalId = setInterval(() => {
@@ -71,10 +68,10 @@
             stopCountdown: function () {
                 // "Stop" means "interrupt"
                 let newMinutes = Math.floor((Date.now() - this.countdown.startTime) / 60000)
-                // if (1 > newMinutes) {
-                //     // countdown of less than 1 minute does not count
-                //     return
-                // }
+                if (1 > newMinutes) {
+                    // countdown of less than 1 minute does not count
+                    return
+                }
                 this.countdown.length = "" + newMinutes
                 this.finishCountdown()
             },
@@ -101,7 +98,7 @@
                 localStorage.setItem("countdown", JSON.stringify(this.countdown))
                 this.toggleCounting(false)
             },
-            ...mapActions("overview", ["addCountdown", "toggleCounting"])
+            ...mapActions("overview", ["addCountdown", "toggleCounting", "getTaskTitleById"])
         }
     }
 </script>
