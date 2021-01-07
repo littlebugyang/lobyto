@@ -7,7 +7,7 @@
                     <span>Current Countdown</span>
                 </h4>
 
-                <countdown-progress v-if="counting"></countdown-progress>
+                <countdown-progress v-if="currentCountdown.taskId !== -1"></countdown-progress>
                 <h6 v-else class="mb-3">
                     <span>No countdown for any task right now. </span>
                 </h6>
@@ -72,10 +72,10 @@
 <script>
     import BaseInput from "@/components/BaseInput"
     import BaseButton from "@/components/BaseButton"
-    import TaskItem from "../components/TaskItem"
-    import CountdownProgress from "../components/CountdownProgress"
-    import CountdownModal from "../components/CountdownModal"
-    import requests from "../plugins/request"
+    import TaskItem from "@/components/TaskItem"
+    import CountdownProgress from "@/views/Countdown/CountdownProgress"
+    import CountdownModal from "@/components/CountdownModal"
+    import requests from "@/plugins/request"
     import {mapState, mapActions} from "vuex"
 
     export default {
@@ -87,9 +87,6 @@
             // get tasks and countdowns
             this.getTasks({request: requests.getTasks})
             this.getCountdowns({request: requests.getCountdowns})
-
-            // check if there is unsaved countdown
-            this.checkCountdown()
 
             // initialize echarts
             // todo: Take the dates with no hours into consideration
@@ -146,7 +143,6 @@
                 let todayMonth = now.getMonth()
                 let todayDate = now.getDate()
 
-                return 0
                 for (let i = 0; i < this.countdowns.length; ++i) {
                     let startTime = new Date(this.countdowns[i].startTime)
                     // This is today's countdown.
@@ -156,6 +152,7 @@
                 }
                 return sum
             },
+            ...mapState("countdown", ["currentCountdown"]),
             ...mapState("overview", ["counting", "tasks", "countdowns", "modal"])
         },
         methods: {
@@ -173,40 +170,6 @@
             countdownExpired: function (now) {
                 // String * Number == Number
                 return this.countdown.length * 60000 <= (now - this.countdown.startTime)
-            },
-            checkCountdown: function () {
-                // localStorage may contain the last unsaved countdown
-                if (typeof (Storage) === "undefined") {
-                    // Firstly, check localStorage
-                    console.log("Local Storage not available. ")
-                    return
-                }
-                if (localStorage.getItem("countdown") !== null) {
-                    // Secondly, deal with the first-open scenario
-                    this.countdown = JSON.parse(localStorage.getItem("countdown"))
-
-                    // Determine whether there is unsaved countdown
-                    if (this.countdown.startTime != 0) {
-                        // determine whether the last unsaved countdown has expired
-                        const expired = this.countdown.length * 60000 <= (Date.now() - this.countdown.startTime)
-                        if (expired) {
-                            console.log("This countdown has expired. ")
-                            this.addCountdown({
-                                request: requests.addCountdown,
-                                data: {
-                                    countdown: this.countdown
-                                }
-                            })
-                            this.countdown.startTime = 0
-                            this.countdown.taskId = -1
-                            this.countdown.length = "15"
-                            this.saveToLocalStorage("countdown", JSON.stringify(this.countdown))
-                        } else {
-                            // The countdown has not expired. Continue.
-                            this.toggleCounting(true)
-                        }
-                    }
-                }
             },
             loadCountdown: function () {
                 // No countdown.startTime saved
@@ -245,21 +208,6 @@
                     }
                 }, 1000)
                 console.log("Start an interval with id: ", this.intervalId)
-            },
-            startCountdown: function () {
-                console.log("startCountdown from Overview.vue")
-                return
-                // Update this.countdown.startTime
-                this.countdown.startTime = Date.now()
-
-                // Show countdown selection, NOT countdown progress
-                this.showCountdown = false
-
-                // Save the countdown settings to the local storage.
-                localStorage.setItem("countdown", JSON.stringify(this.countdown))
-
-                // Pass countdown to progress and show progress
-                this.toggleCounting(true)
             },
             addCountdown0: function () {
                 this.countdowns.push({
@@ -428,7 +376,7 @@
                 this.showModal = true
                 this.countdown.taskId = id
             },
-            ...mapActions("overview", ["getTasks", "getCountdowns", "addTask", "addCountdown", "toggleCounting"])
+            ...mapActions("overview", ["getTasks", "getCountdowns", "addTask", "addCountdown"])
         }
     }
 </script>

@@ -6,7 +6,7 @@
         <div class="container justify-content-center">
             <div class="row">
                 <base-radio class="col-4" v-for="min in presetCountdownLengths" :key="min" :name="min"
-                            v-model="countdown.length">
+                            v-model="selectedLength">
                     {{`${min}min`}}
                 </base-radio>
             </div>
@@ -19,12 +19,13 @@
 
 <script>
     import Modal from "@/components/Modal"
-    import {mapState, mapActions} from "vuex"
+    import {mapState, mapMutations} from "vuex"
 
     export default {
         name: "CountdownModal",
         components: {Modal},
         computed: {
+            ...mapState("countdown", ["currentCountdown"]),
             ...mapState("overview", ["modal"])
         },
         watch: {
@@ -42,25 +43,29 @@
             return {
                 showModal: false,
                 presetCountdownLengths: ["2", "15", "25", "35", "45", "60", "90", "120", "180"],
-                countdown: {
-                    taskId: -1,
-                    startTime: 0,
-                    length: "15"
-                }
+                selectedLength: "15"
             }
         },
         methods: {
             startCountdown: function () {
-                this.countdown.startTime = Date.now()
-                this.countdown.taskId = this.modal.taskId
-                // this.countdown.length has been bound to the base-radio
-                localStorage.setItem("countdown", JSON.stringify(this.countdown))
+                if (this.currentCountdown.taskId !== -1) {
+                    console.log("There is another countdown counting. ")
+                    return
+                }
+
+                const newCurrentCountdown = {
+                    taskId: this.modal.taskId,
+                    startTime: Date.now(),
+                    length: this.selectedLength,
+                    stop: false
+                }
+                this.mutateCurrentCountdown(newCurrentCountdown)
+                localStorage.setItem("countdown", JSON.stringify(newCurrentCountdown))
 
                 // Close countdown modal && show countdown progress
                 this.showModal = false
-                this.toggleCounting(true)
             },
-            ...mapActions("overview", ["toggleCounting"])
+            ...mapMutations("countdown", ["mutateCurrentCountdown"])
         }
     }
 </script>

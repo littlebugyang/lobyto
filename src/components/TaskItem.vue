@@ -42,21 +42,19 @@
         },
         methods: {
             toggleTask: function () {
+                // todo: Eovke requests.updateTask
                 this.$emit("task-toggled", this.id)
             },
             deleteTask: function () {
+                // todo: Evoke requests.deleteTask
                 this.$emit("task-deleted", this.id)
             },
             evokeCountdown: function () {
-                // this.$emit("evoke-countdown", this.id)
                 this.toggleModal({
                     show: true,
                     title: this.title,
                     taskId: this.id
                 })
-            },
-            startCountdown: function () {
-                console.log("startCountdown from TaskItem.vue")
             },
             ...mapActions("overview", ["toggleModal"])
         }

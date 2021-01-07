@@ -70,9 +70,6 @@ export default {
             }, () => {
             })
         },
-        toggleCounting(context, counting) {
-            context.commit("update", {prop: "counting", data: counting})
-        },
         toggleModal(context, modal) {
             context.commit("update", {prop: "modal", data: modal})
         }
