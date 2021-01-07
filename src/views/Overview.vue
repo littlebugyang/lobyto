@@ -40,10 +40,9 @@
                     <base-button type="primary" @click="exportTasks">export</base-button>
                 </h4>
 
-                <task-item v-for="task in undoneTasks" :key="task.id" :done="task.status===1" :id="task.id"
-                           :title="task.title"
-                           v-on:task-toggled="handleTaskToggle" v-on:task-deleted="handleTaskDeleted"
-                           v-on:evoke-countdown="handleCountdownEvoked">
+                <task-item v-for="task in undoneTasks"
+                           :key="task.id" :id="task.id"
+                           :done="task.status===1" :title="task.title">
                 </task-item>
 
                 <hr/>
@@ -77,6 +76,7 @@
     import CountdownModal from "@/components/CountdownModal"
     import requests from "@/plugins/request"
     import {mapState, mapActions} from "vuex"
+    import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
 
     export default {
         name: "Overview",
@@ -156,104 +156,6 @@
             ...mapState("overview", ["counting", "tasks", "countdowns", "modal"])
         },
         methods: {
-            saveToLocalStorage: function (key, value) {
-                localStorage.setItem(key, value)
-            },
-            getTaskIndexById: function (id) {
-                for (let i = 0; i < this.tasks.length; ++i) {
-                    if (this.tasks[i].id === id) {
-                        return i
-                    }
-                }
-                return -1
-            },
-            countdownExpired: function (now) {
-                // String * Number == Number
-                return this.countdown.length * 60000 <= (now - this.countdown.startTime)
-            },
-            loadCountdown: function () {
-                // No countdown.startTime saved
-                if (this.countdown.startTime === 0) {
-                    return
-                }
-                // The last countdown.startTime has expired
-
-                else if (this.countdownExpired(Date.now())) {
-                    this.cancelCountdown()
-                    return
-                }
-
-                // Otherwise, start the interval.
-                // Just in case. I really don't know the effective filed in multiple layers of functions.
-                let _this = this
-                this.intervalId = setInterval(function () {
-                    if (_this.countdownExpired(Date.now())) {
-                        _this.addCountdown()
-                        _this.cancelCountdown()
-
-                        // show notification
-                        if (window.Notification && Notification.permission !== "denied") {
-                            Notification.requestPermission(function (status) {
-                                new Notification("Lobyto Countdown", {
-                                    body: "Time is up!!!!",
-                                    icon: "http://img3.imgtn.bdimg.com/it/u=3891266103,2994336694&fm=26&gp=0.jpg"
-                                })
-                            })
-                        }
-                    } else {
-                        let secondsLeft = _this.countdown.minutes * 60.0 - (Date.now() - _this.countdown.startTime) / 1000.0
-                        let percentage = (1.0 - secondsLeft / (_this.countdown.minutes * 60.0)) * 100
-                        _this.progress.value = parseInt(percentage)
-                        _this.progress.show = true
-                    }
-                }, 1000)
-                console.log("Start an interval with id: ", this.intervalId)
-            },
-            addCountdown0: function () {
-                this.countdowns.push({
-                    taskId: this.countdown.taskId,
-                    minutes: this.countdown.minutes,
-                    startTime: this.countdown.startTime
-                })
-                // add countdown to server
-                requests.addCountdown(
-                    {
-                        countdown: {
-                            taskId: this.countdown.taskId,
-                            length: this.countdown.minutes,
-                            startTime: this.countdown.startTime
-                        }
-                    },
-                    () => {
-                    }, () => {
-                    })
-                this.saveToLocalStorage("countdowns", JSON.stringify(this.countdowns))
-            },
-            finishCountdown: function () {
-                // finish countdown ahead
-                let newMinutes = Math.floor((Date.now() - this.countdown.startTime) / 60000)
-                if (1 > newMinutes) {
-                    // countdown of less than 1 minute does not count
-                    return
-                }
-
-                this.countdown.minutes = "" + newMinutes
-                this.addCountdown()
-                this.cancelCountdown()
-            },
-            cancelCountdown: function () {
-                console.log("Clear the interval with id: ", this.intervalId)
-                clearInterval(this.intervalId)
-                this.tasks[this.getTaskIndexById(this.countdown.taskId)].counting = false
-                this.intervalId = 0
-                this.progress.value = 0
-                this.progress.show = false
-                this.countdown.startTime = 0
-                this.countdown.taskId = -1
-                this.countdown.minutes = "15"
-                this.saveToLocalStorage("countdown", JSON.stringify(this.countdown))
-                this.saveToLocalStorage("tasks", JSON.stringify(this.tasks))
-            },
             confirmAdd: function () {
                 this.addTask({
                     request: requests.addTask,
@@ -290,91 +192,14 @@
                 return {recentDates: recentDates.reverse(), recentLengths: recentLengths.reverse()}
             },
             exportTasks: function () {
-                var textArea = document.createElement("textarea")
-
-                //
-                // *** This styling is an extra step which is likely not required. ***
-                //
-                // Why is it here? To ensure:
-                // 1. the element is able to have focus and selection.
-                // 2. if element was to flash render it has minimal visual impact.
-                // 3. less flakyness with selection and copying which **might** occur if
-                //    the textarea element is not visible.
-                //
-                // The likelihood is the element won't even render, not even a
-                // flash, so some of these are just precautions. However in
-                // Internet Explorer the element is visible whilst the popup
-                // box asking the user for permission for the web page to
-                // copy to the clipboard.
-                //
-
-                // Place in top-left corner of screen regardless of scroll position.
-                textArea.style.position = "fixed"
-                textArea.style.top = 0
-                textArea.style.left = 0
-
-                // Ensure it has a small width and height. Setting to 1px / 1em
-                // doesn't work as this gives a negative w/h on some browsers.
-                textArea.style.width = "2em"
-                textArea.style.height = "2em"
-
-                // We don't need padding, reducing the size if it does flash render.
-                textArea.style.padding = 0
-
-                // Clean up any borders.
-                textArea.style.border = "none"
-                textArea.style.outline = "none"
-                textArea.style.boxShadow = "none"
-
-                // Avoid flash of white box if rendered for any reason.
-                textArea.style.background = "transparent"
-
-                // copy markdown content to clipboard
-                let toBeCopied = {}
-
-                // to-do form
-                /* for (let i = 0; i < this.tasks.length; ++i) {
-                     let task = this.tasks[i]
-                     toBeCopied += `- [${task.done ? 'x' : ' '}] ${task.title}\n`
-                 }
-                 textArea.value = toBeCopied */
-
-                // json form
-                toBeCopied.countdowns = this.countdowns
-                toBeCopied.tasks = this.tasks
-                textArea.value = `\`\`\`json\n${JSON.stringify(toBeCopied)}`
-
-                document.body.appendChild(textArea)
-                textArea.focus()
-                textArea.select()
-
-                try {
-                    var successful = document.execCommand("copy")
-                    var msg = successful ? "successful" : "unsuccessful"
-                    console.log("Copying text command was " + msg)
-                } catch (err) {
-                    console.log("Oops, unable to copy")
+                if (exportTasksCountdowns(this.tasks, this.countdowns)) {
+                    // todo: show export successfully
+                } else {
+                    // todo: show failure to export
                 }
-
-                document.body.removeChild(textArea)
             },
             handleNewTaskInput: function (val) {
                 this.newTitle = val
-            },
-            handleTaskToggle: function (id) {
-                let i = this.getTaskIndexById(id)
-                this.tasks[i].done = !this.tasks[i].done
-                this.saveToLocalStorage("tasks", JSON.stringify(this.tasks))
-            },
-            handleTaskDeleted: function (id) {
-                // todo: implement the api of deleting the todo
-                console.log("Delete task item with id: ", id)
-                this.tasks.splice(this.getTaskIndexById(id), 1)
-            },
-            handleCountdownEvoked: function (id) {
-                console.log("A task's countdown has been evoked: ", id)
-                this.showModal = true
-                this.countdown.taskId = id
             },
             ...mapActions("overview", ["getTasks", "getCountdowns", "addTask", "addCountdown"])
         }
