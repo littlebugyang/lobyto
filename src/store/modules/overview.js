@@ -36,7 +36,7 @@ export default {
         },
         async addTask(context, payload) {
             await payload.request(payload.data, data => {
-                context.commit("push", {prop: "tasks", data: data[0]})
+                context.commit("mutateTasks", context.state.tasks.concat(data))
             }, () => {
             })
         },
