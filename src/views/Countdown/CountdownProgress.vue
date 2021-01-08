@@ -1,7 +1,7 @@
 <template>
     <div>
         <h6><span>{{title}}</span></h6>
-        <base-progress type="primary" :value="value"></base-progress>
+        <base-progress type="primary" :value="value" label="counting"></base-progress>
         <base-button type="default" @click="stop">Finish Ahead</base-button>
         <base-button type="warning" @click="cancel">Cancel</base-button>
     </div>

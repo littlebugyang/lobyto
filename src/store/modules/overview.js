@@ -20,13 +20,11 @@ export default {
             state[payload.prop] = payload.data
         },
         push(state, payload) {
-            console.log("push ", payload)
             state[payload.prop].push(payload.data)
         },
         mutateTasks(state, tasks) {
             state.tasks = tasks
             state.undoneTasks = tasks.filter(task => task.status == 0)
-            console.log(state.undoneTasks)
         }
     },
     actions: {
