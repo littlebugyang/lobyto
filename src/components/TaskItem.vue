@@ -37,8 +37,9 @@
 </template>
 
 <script>
-    import {mapActions} from "vuex"
+    import {mapState, mapActions} from "vuex"
     import BaseDropdown from "@/components/BaseDropdown"
+    import requests from "@/plugins/request"
 
     export default {
         name: "TaskItem",
@@ -54,12 +55,32 @@
                 default: false
             }
         },
+        computed: {
+            ...mapState("countdown", ["currentCountdown"])
+        },
         methods: {
             toggleTaskDone: function () {
-                // todo: Eovke requests.updateTask
                 console.log("Toggle Task Done State. ")
+                this.updateTask({
+                    request: requests.updateTask,
+                    data: {
+                        task: {
+                            id: this.id,
+                            title: this.title,
+                            status: this.done ? 0 : 1
+                        }
+                    }
+                })
             },
             taskToCountdown: function () {
+                if(this.currentCountdown.taskId !== -1){
+                    if(this.currentCountdown.taskId === this.id){
+                        console.error("This task is being counted. ")
+                        return
+                    }
+                    console.error("There is another countdown counting. ")
+                    return
+                }
                 this.toggleModal({
                     show: true,
                     title: this.title,
@@ -71,12 +92,16 @@
             },
             taskToDelete: function () {
                 // todo: Evoke requests.deleteTask
+                if(this.currentCountdown.taskId === this.id){
+                    console.error("Unable to delete the being counted task. ")
+                    return
+                }
                 console.log("Open Delete Dialog. ")
             },
             taskToAbandon: function () {
                 console.log("Open Notification Dialog. ")
             },
-            ...mapActions("overview", ["toggleModal"])
+            ...mapActions("overview", ["toggleModal", "updateTask"])
         }
     }
 </script>

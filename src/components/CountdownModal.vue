@@ -48,11 +48,6 @@
         },
         methods: {
             startCountdown: function () {
-                if (this.currentCountdown.taskId !== -1) {
-                    console.log("There is another countdown counting. ")
-                    return
-                }
-
                 const newCurrentCountdown = {
                     taskId: this.modal.taskId,
                     startTime: Date.now(),

@@ -3,6 +3,7 @@ export default {
     state: {
         // determine whether to show progress
         counting: false,
+        undoneTasks: [],
         tasks: [],
         countdowns: [],
 
@@ -21,12 +22,17 @@ export default {
         push(state, payload) {
             console.log("push ", payload)
             state[payload.prop].push(payload.data)
+        },
+        mutateTasks(state, tasks) {
+            state.tasks = tasks
+            state.undoneTasks = tasks.filter(task => task.status == 0)
+            console.log(state.undoneTasks)
         }
     },
     actions: {
         async getTasks(context, payload) {
             await payload.request(data => {
-                context.commit("update", {prop: "tasks", data})
+                context.commit("mutateTasks", data)
             }, () => {
             })
         },
@@ -40,12 +46,12 @@ export default {
             await payload.request(payload.data, data => {
                 const tasks = context.state.tasks
                 for (let i = 0; i < tasks.length; ++i) {
-                    if (tasks[i].id === id) {
+                    if (tasks[i].id === data[0].id) {
                         tasks[i] = data[0]
                         break
                     }
                 }
-                context.commit("update", {prop: "tasks", data: tasks})
+                context.commit("mutateTasks", tasks)
             }, () => {
             })
         },

@@ -1,9 +1,9 @@
-import secret from '../secret'
+import secret from "../secret"
 
 const axios = require("axios")
 
-axios.defaults.baseURL = '/api';
-axios.defaults.headers.post['Content-Type'] = 'application/json';
+axios.defaults.baseURL = "/api"
+axios.defaults.headers.post["Content-Type"] = "application/json"
 
 const requests = {
     // todo: modify state.waiting before every web request
@@ -54,7 +54,7 @@ const requests = {
             password: secret.password,
             task: body.task
         }).then(function (res) {
-            succ(res)
+            succ(requests.dataMap("task", res.data))
         }).catch(function (error) {
             fail(error)
         })
@@ -74,7 +74,7 @@ const requests = {
             password: secret.password,
             countdown: body.countdown
         }).then(function (res) {
-            succ(res)
+            succ(requests.dataMap("countdown", res.data))
         }).catch(function (error) {
             fail(error)
         })

@@ -131,10 +131,10 @@
             }
         },
         computed: {
-            undoneTasks: function () {
-                if (!this.tasks) return []
-                return this.tasks.filter(task => task.status == 0)
-            },
+            // undoneTasks: function () {
+            //     if (!this.tasks) return []
+            //     return this.tasks.filter(task => task.status == 0)
+            // },
             sumCountdown: function () {
                 let sum = 0
 
@@ -153,7 +153,7 @@
                 return sum
             },
             ...mapState("countdown", ["currentCountdown"]),
-            ...mapState("overview", ["counting", "tasks", "countdowns", "modal"])
+            ...mapState("overview", ["counting", "tasks", "undoneTasks", "countdowns", "modal"])
         },
         methods: {
             confirmAdd: function () {
