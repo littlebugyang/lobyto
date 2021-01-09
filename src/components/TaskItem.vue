@@ -97,9 +97,29 @@
                     return
                 }
                 console.log("Open Delete Dialog. ")
+                this.updateTask({
+                    request: requests.updateTask,
+                    data: {
+                        task: {
+                            id: this.id,
+                            title: this.title,
+                            status: 2
+                        }
+                    }
+                })
             },
             taskToAbandon: function () {
                 console.log("Open Notification Dialog. ")
+                this.updateTask({
+                    request: requests.updateTask,
+                    data: {
+                        task: {
+                            id: this.id,
+                            title: this.title,
+                            status: 3
+                        }
+                    }
+                })
             },
             ...mapActions("overview", ["toggleModal", "updateTask"])
         }
