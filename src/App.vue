@@ -8,15 +8,17 @@
         </main>
         <router-view name="footer"></router-view>
         <countdown></countdown>
+        <waiting-modal></waiting-modal>
     </div>
 </template>
 <script>
     import {FadeTransition} from "vue2-transitions"
     import Countdown from "@/components/Countdown/Countdown"
+    import WaitingModal from "@/views/Modal/WaitingModal"
 
     export default {
         components: {
-            FadeTransition, Countdown
+            FadeTransition, Countdown, WaitingModal
         }
     }
 </script>

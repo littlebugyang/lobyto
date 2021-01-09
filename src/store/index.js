@@ -11,13 +11,13 @@ export default new Vuex.Store({
         waiting: false
     },
     mutations: {
-        update(state, waiting) {
-            state.waiting = waiting
+        replaceState(state, payload) {
+            state[payload.prop] = payload.data
         }
     },
     actions: {
         toggleWaiting(context, waiting) {
-            context.commit("update", waiting)
+            context.commit("replaceState", {prop: "waiting", data: waiting})
         }
     },
     modules: {

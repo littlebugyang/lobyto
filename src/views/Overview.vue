@@ -73,7 +73,7 @@
     import BaseButton from "@/components/BaseButton"
     import TaskItem from "@/components/TaskItem"
     import CountdownProgress from "@/views/Countdown/CountdownProgress"
-    import CountdownModal from "@/components/CountdownModal"
+    import CountdownModal from "@/views/Modal/CountdownModal"
     import requests from "@/plugins/request"
     import {mapState, mapActions} from "vuex"
     import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
