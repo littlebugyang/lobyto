@@ -30,34 +30,24 @@ const requests = {
         })
     },
     // task-oriented
-    getTasks: function (succ, fail) {
-        return axios.get("/get_tasks").then(function (res) {
-            succ(requests.dataMap("task", res.data))
-        }).catch(function (error) {
-            fail(error)
-        })
+    getTasks: function () {
+        return axios.get("/get_tasks").then((res) => requests.dataMap("task", res.data))
     },
-    addTask: function (body, succ, fail) {
-        return axios.post("/add_task", {
+
+    addTask: function ({body}) {
+        body = Object.assign(body, {
             userName: secret.userName,
             password: secret.password,
-            task: body.task
-        }).then(function (res) {
-            succ(requests.dataMap("task", res.data))
-        }).catch(function (error) {
-            fail(error)
         })
+        return axios.post("/add_task", body).then((res) => requests.dataMap("task", res.data))
     },
-    updateTask: function (body, succ, fail) {
-        return axios.put("/update_task", {
+
+    updateTask: function ({body}) {
+        body = Object.assign(body, {
             userName: secret.userName,
             password: secret.password,
-            task: body.task
-        }).then(function (res) {
-            succ(requests.dataMap("task", res.data))
-        }).catch(function (error) {
-            fail(error)
         })
+        return axios.put("/update_task", body).then((res) => requests.dataMap("task", res.data))
     },
 
     // countdown-oriented

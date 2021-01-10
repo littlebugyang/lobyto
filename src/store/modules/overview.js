@@ -28,40 +28,6 @@ export default {
         }
     },
     actions: {
-        async getTasks(context, payload) {
-            await payload.request(data => {
-                context.commit("mutateTasks", data)
-            }, () => {
-            })
-        },
-        async addTask(context, payload) {
-            await payload.request(payload.data, data => {
-                context.commit("mutateTasks", context.state.tasks.concat(data))
-            }, () => {
-            })
-        },
-        async updateTask(context, payload) {
-            await payload.request(payload.data, data => {
-                const tasks = context.state.tasks
-                for (let i = 0; i < tasks.length; ++i) {
-                    if (tasks[i].id === data[0].id) {
-                        tasks[i] = data[0]
-                        break
-                    }
-                }
-                context.commit("mutateTasks", tasks)
-            }, () => {
-            })
-        },
-        getTaskTitleById(context, id) {
-            const tasks = context.state.tasks
-            for (let i = 0; i < tasks.length; ++i) {
-                if (tasks[i].id === id) {
-                    return tasks[i].title
-                }
-            }
-            return ""
-        },
         async getCountdowns(context, payload) {
             await payload.request(data => {
                 context.commit("update", {prop: "countdowns", data})

@@ -37,7 +37,7 @@
                 this.cancelCountdown()
             },
             ...mapActions("countdown", ["stopCountdown", "cancelCountdown"]),
-            ...mapActions("overview", ["getTaskTitleById"])
+            ...mapActions("task", ["getTaskTitleById"])
         },
         watch: {
             tasks() {

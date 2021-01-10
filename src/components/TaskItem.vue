@@ -60,10 +60,8 @@
         },
         methods: {
             toggleTaskDone: function () {
-                console.log("Toggle Task Done State. ")
                 this.updateTask({
-                    request: requests.updateTask,
-                    data: {
+                    body: {
                         task: {
                             id: this.id,
                             title: this.title,
@@ -73,8 +71,8 @@
                 })
             },
             taskToCountdown: function () {
-                if(this.currentCountdown.taskId !== -1){
-                    if(this.currentCountdown.taskId === this.id){
+                if (this.currentCountdown.taskId !== -1) {
+                    if (this.currentCountdown.taskId === this.id) {
                         console.error("This task is being counted. ")
                         return
                     }
@@ -92,14 +90,13 @@
             },
             taskToDelete: function () {
                 // todo: Evoke requests.deleteTask
-                if(this.currentCountdown.taskId === this.id){
+                if (this.currentCountdown.taskId === this.id) {
                     console.error("Unable to delete the being counted task. ")
                     return
                 }
                 console.log("Open Delete Dialog. ")
                 this.updateTask({
-                    request: requests.updateTask,
-                    data: {
+                    body: {
                         task: {
                             id: this.id,
                             title: this.title,
@@ -111,8 +108,7 @@
             taskToAbandon: function () {
                 console.log("Open Notification Dialog. ")
                 this.updateTask({
-                    request: requests.updateTask,
-                    data: {
+                    body: {
                         task: {
                             id: this.id,
                             title: this.title,
@@ -121,7 +117,8 @@
                     }
                 })
             },
-            ...mapActions("overview", ["toggleModal", "updateTask"])
+            ...mapActions("task", ["updateTask"]),
+            ...mapActions("overview", ["toggleModal"])
         }
     }
 </script>

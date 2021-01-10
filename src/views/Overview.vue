@@ -85,8 +85,8 @@
         },
         mounted: function () {
             // get tasks and countdowns
-            this.getTasks({request: requests.getTasks})
-            this.getCountdowns({request: requests.getCountdowns})
+            this.getUndoneTasks()
+            // todo: get countdowns
 
             // initialize echarts
             // todo: Take the dates with no hours into consideration
@@ -131,10 +131,6 @@
             }
         },
         computed: {
-            // undoneTasks: function () {
-            //     if (!this.tasks) return []
-            //     return this.tasks.filter(task => task.status == 0)
-            // },
             sumCountdown: function () {
                 let sum = 0
 
@@ -152,15 +148,17 @@
                 }
                 return sum
             },
+            ...mapState("task", ["undoneTasks"]),
             ...mapState("countdown", ["currentCountdown"]),
-            ...mapState("overview", ["counting", "tasks", "undoneTasks", "countdowns", "modal"])
+            ...mapState("overview", ["counting", "tasks", "countdowns", "modal"])
         },
         methods: {
             confirmAdd: function () {
                 this.addTask({
-                    request: requests.addTask,
-                    data: {
-                        task: {title: this.newTitle}
+                    body: {
+                        task: {
+                            title: this.newTitle
+                        }
                     }
                 })
 
@@ -201,7 +199,9 @@
             handleNewTaskInput: function (val) {
                 this.newTitle = val
             },
-            ...mapActions("overview", ["getTasks", "getCountdowns", "addTask", "addCountdown"])
+            ...mapActions("task", ["getUndoneTasks", "addTask"]),
+            ...mapActions("overview", ["getCountdowns", "addCountdown"]),
+            ...mapActions(["request"])
         }
     }
 </script>

@@ -19,6 +19,9 @@
     export default {
         components: {
             FadeTransition, Countdown, WaitingModal
+        },
+        mounted: function(){
+            // just for highlight
         }
     }
 </script>
