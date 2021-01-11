@@ -23,7 +23,6 @@ import Argon from "./plugins/argon-kit"
 import "./registerServiceWorker"
 
 let echarts = require("echarts")
-
 Vue.prototype.$echarts = echarts
 Vue.config.productionTip = false
 

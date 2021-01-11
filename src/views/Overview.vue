@@ -59,7 +59,7 @@
                 <!-- View the overview of countdowns -->
                 <h4 class="mb-5">
                     <span>Overview of Countdowns</span>
-                    <div id="overviewChart"></div>
+                    <recent-chart></recent-chart>
                 </h4>
 
             </div>
@@ -74,45 +74,19 @@
     import TaskItem from "@/components/TaskItem"
     import CountdownProgress from "@/views/Countdown/CountdownProgress"
     import CountdownModal from "@/views/Modal/CountdownModal"
-    import requests from "@/plugins/request"
     import {mapState, mapActions} from "vuex"
     import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
+    import RecentChart from "@/views/Chart/RecentChart"
 
     export default {
         name: "Overview",
         components: {
-            CountdownModal, CountdownProgress, BaseButton, BaseInput, TaskItem
+            RecentChart, CountdownModal, CountdownProgress, BaseButton, BaseInput, TaskItem
         },
         mounted: function () {
             // get tasks and countdowns
             this.getUndoneTasks()
             this.getCountdowns()
-            // todo: get countdowns
-
-            // initialize echarts
-            // todo: Take the dates with no hours into consideration
-            // todo: Make the chart changes in real-time.
-            let overview = this.$echarts.init(document.getElementById("overviewChart"))
-            const statistics = this.calculateChartStatistics()
-
-            overview.setOption({
-                color: "#5e72e4",
-                title: {
-                    text: "Countdown sums in recent days",
-                    left: "center"
-                },
-                xAxis: {
-                    name: "date",
-                    data: statistics.recentDates
-                },
-                yAxis: {
-                    name: "hours"
-                },
-                series: [{
-                    type: "bar",
-                    data: statistics.recentLengths.map(minutes => new Number(minutes / 60.0).toFixed(2))
-                }]
-            })
         },
         data() {
             return {
@@ -166,30 +140,6 @@
                 // clear the input
                 this.newTitle = ""
             },
-            calculateChartStatistics: function () {
-                // calculate the statistics the chart needs
-                let recentDates = []
-                let recentLengths = []
-                let dateCount = 0
-                let maxDates = 8
-                for (let i = this.countdowns.length - 1; i > 0 && dateCount < maxDates; --i) {
-                    let startTime = new Date(Date.parse(this.countdowns[i].startTime))
-                    let recentMonth = startTime.getMonth() + 1
-                    let recentDate = startTime.getDate()
-
-                    if (recentDates.length == 0 || `${recentMonth}.${recentDate}` != recentDates[recentDates.length - 1]) {
-                        // being able to push a new date
-                        ++dateCount
-
-                        // push a new date and new minutes
-                        recentDates.push(`${recentMonth}.${recentDate}`)
-                        recentLengths.push(parseInt(this.countdowns[i].length))
-                    } else {
-                        recentLengths[recentLengths.length - 1] += parseInt(this.countdowns[i].length)
-                    }
-                }
-                return {recentDates: recentDates.reverse(), recentLengths: recentLengths.reverse()}
-            },
             exportTasks: function () {
                 if (exportTasksCountdowns(this.tasks, this.countdowns)) {
                     // todo: show export successfully
@@ -208,11 +158,5 @@
 </script>
 
 <style scoped>
-    #overviewChart {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 400px;
-    }
+
 </style>
