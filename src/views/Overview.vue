@@ -41,7 +41,7 @@
                 </h4>
 
                 <task-item v-for="task in undoneTasks"
-                           :key="task.id" :id="task.id"
+                           :key="task.id" :id="task.id" :task="task"
                            :done="task.status===1" :title="task.title">
                 </task-item>
 
@@ -65,6 +65,7 @@
             </div>
         </div>
         <countdown-modal></countdown-modal>
+        <EditTaskModal></EditTaskModal>
     </div>
 </template>
 
@@ -77,11 +78,13 @@
     import {mapState, mapActions} from "vuex"
     import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
     import RecentChart from "@/views/Chart/RecentChart"
+    import EditTaskModal from "@/views/Modal/EditTaskModal"
 
     export default {
         name: "Overview",
         components: {
-            RecentChart, CountdownModal, CountdownProgress, BaseButton, BaseInput, TaskItem
+            EditTaskModal, CountdownModal,
+            RecentChart, CountdownProgress, BaseButton, BaseInput, TaskItem
         },
         mounted: function () {
             // get tasks and countdowns
@@ -91,10 +94,6 @@
         data() {
             return {
                 newTitle: "",
-
-                // The three variables below are about countdown, but there's no need to store them.
-                showModal: false,
-                presetCountdownLengths: ["2", "15", "25", "35", "45", "60", "90", "120", "180"],
 
                 // The variables below are about countdown. They should be stored in local storage.
                 // todo: change object variable name to "currentCountdown"
@@ -125,7 +124,7 @@
             },
             ...mapState("task", ["undoneTasks"]),
             ...mapState("countdown", ["currentCountdown", "countdowns"]),
-            ...mapState("overview", ["counting", "modal"])
+            ...mapState("overview", ["counting", "countdownModal", "editTaskModal", "confirmModal"])
         },
         methods: {
             confirmAdd: function () {

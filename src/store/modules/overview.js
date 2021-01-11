@@ -7,8 +7,20 @@ export default {
         tasks: [],
         countdowns: [],
 
-        // one universal modal for Overview.vue
-        modal: {
+        countdownModal: {
+            show: false,
+            title: "",
+            taskId: 0
+        },
+        editTaskModal: {
+            show: false,
+            task: {
+                id: 0,
+                title: "",
+                status: 0
+            }
+        },
+        confirmModal: {
             show: false,
             title: "",
             taskId: 0
@@ -28,8 +40,14 @@ export default {
         }
     },
     actions: {
-        toggleModal(context, modal) {
-            context.commit("update", {prop: "modal", data: modal})
+        toggleCountdownModal(context, countdownModal) {
+            context.commit("update", {prop: "countdownModal", data: countdownModal})
+        },
+        toggleEditTaskModal(context, editTaskModal) {
+            context.commit("update", {prop: "editTaskModal", data: editTaskModal})
+        },
+        toggleConfirmModal(context, confirmModal) {
+            context.commit("update", {prop: "confirmModal", data: confirmModal})
         }
     }
 }

@@ -1,7 +1,7 @@
 <template>
-    <modal v-if="modal.show" :show.sync="showModal">
+    <modal v-if="countdownModal.show" :show.sync="showModal">
         <template slot="header">
-            <h5 class="modal-title">Countdown for {{modal.title}}</h5>
+            <h5 class="modal-title">Countdown for {{countdownModal.title}}</h5>
         </template>
         <div class="container justify-content-center">
             <div class="row">
@@ -19,23 +19,23 @@
 
 <script>
     import Modal from "@/components/Modal"
-    import {mapState, mapMutations} from "vuex"
+    import {mapState, mapMutations, mapActions} from "vuex"
 
     export default {
         name: "CountdownModal",
         components: {Modal},
         computed: {
             ...mapState("countdown", ["currentCountdown"]),
-            ...mapState("overview", ["modal"])
+            ...mapState("overview", ["countdownModal"])
         },
         watch: {
             // two-way bind this.showModal and this.modal.show
             showModal: function (val) {
                 if (!val) {
-                    this.$store.dispatch("overview/toggleModal", false)
+                    this.toggleCountdownModal({show: false})
                 }
             },
-            modal: function (val) {
+            countdownModal: function () {
                 this.showModal = true
             }
         },
@@ -49,7 +49,7 @@
         methods: {
             startCountdown: function () {
                 const newCurrentCountdown = {
-                    taskId: this.modal.taskId,
+                    taskId: this.countdownModal.taskId,
                     startTime: Date.now(),
                     length: this.selectedLength,
                     stop: false
@@ -60,7 +60,8 @@
                 // Close countdown modal && show countdown progress
                 this.showModal = false
             },
-            ...mapMutations("countdown", ["mutateCurrentCountdown"])
+            ...mapMutations("countdown", ["mutateCurrentCountdown"]),
+            ...mapActions("overview", ["toggleCountdownModal"])
         }
     }
 </script>

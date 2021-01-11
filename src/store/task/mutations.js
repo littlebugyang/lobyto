@@ -6,7 +6,7 @@ export default {
         const types = ["tasks", "undoneTasks", "doneTasks"]
         let currentTasks = {}
         for (let i = 0; i < types.length; ++i) {
-            currentTasks[types[i]] = state[types[i]]
+            currentTasks[types[i]] = JSON.parse(JSON.stringify(state[types[i]]))
         }
 
         for (let i = 0; i < types.length; ++i) {

@@ -39,7 +39,6 @@
 <script>
     import {mapState, mapActions} from "vuex"
     import BaseDropdown from "@/components/BaseDropdown"
-    import requests from "@/plugins/request"
 
     export default {
         name: "TaskItem",
@@ -53,13 +52,18 @@
             counting: {
                 type: Boolean,
                 default: false
-            }
+            },
+            task: {}
         },
         computed: {
             ...mapState("countdown", ["currentCountdown"])
         },
         methods: {
             toggleTaskDone: function () {
+                if (this.currentCountdown.taskId === this.id) {
+                    console.error("This task is being counted. ")
+                    return
+                }
                 this.updateTask({
                     body: {
                         task: {
@@ -79,14 +83,17 @@
                     console.error("There is another countdown counting. ")
                     return
                 }
-                this.toggleModal({
+                this.toggleCountdownModal({
                     show: true,
                     title: this.title,
                     taskId: this.id
                 })
             },
             taskToEdit: function () {
-                console.log("Open Edit Dialog. ")
+                this.toggleEditTaskModal({
+                    show: true,
+                    task: this.task
+                })
             },
             taskToDelete: function () {
                 // todo: Evoke requests.deleteTask
@@ -94,7 +101,6 @@
                     console.error("Unable to delete the being counted task. ")
                     return
                 }
-                console.log("Open Delete Dialog. ")
                 this.updateTask({
                     body: {
                         task: {
@@ -106,7 +112,6 @@
                 })
             },
             taskToAbandon: function () {
-                console.log("Open Notification Dialog. ")
                 this.updateTask({
                     body: {
                         task: {
@@ -118,7 +123,7 @@
                 })
             },
             ...mapActions("task", ["updateTask"]),
-            ...mapActions("overview", ["toggleModal"])
+            ...mapActions("overview", ["toggleCountdownModal", "toggleEditTaskModal"])
         }
     }
 </script>
