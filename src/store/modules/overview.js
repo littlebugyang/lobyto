@@ -28,18 +28,6 @@ export default {
         }
     },
     actions: {
-        async getCountdowns(context, payload) {
-            await payload.request(data => {
-                context.commit("update", {prop: "countdowns", data})
-            }, () => {
-            })
-        },
-        async addCountdown(context, payload) {
-            await payload.request(payload.data, data => {
-                context.commit("update", {prop: "countdowns", data: data[0]})
-            }, () => {
-            })
-        },
         toggleModal(context, modal) {
             context.commit("update", {prop: "modal", data: modal})
         }

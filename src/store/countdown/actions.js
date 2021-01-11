@@ -1,15 +1,27 @@
 export default {
-    async getCountdowns(context, payload) {
-        await payload.request(data => {
-            context.commit("update", {prop: "countdowns", data})
-        }, () => {
-        })
+    getCountdowns({dispatch, commit}, payload = {}) {
+        const originSucceed = payload.succeed
+        payload.succeed = (res) => {
+            commit("replaceCountdowns", res)
+            originSucceed ? originSucceed(res) : null
+        }
+        dispatch(
+            "request",
+            Object.assign({api: "getCountdowns"}, payload),
+            {root: true}
+        )
     },
-    async addCountdown(context, payload) {
-        await payload.request(payload.data, data => {
-            context.commit("update", {prop: "countdowns", data: data[0]})
-        }, () => {
-        })
+    addCountdown({dispatch, commit}, payload) {
+        const originSucceed = payload.succeed
+        payload.succeed = (res) => {
+            commit("push", {prop: "countdowns", data: res[0]})
+            originSucceed ? originSucceed(res) : null
+        }
+        dispatch(
+            "request",
+            Object.assign({api: "addCountdown"}, payload),
+            {root: true}
+        )
     },
     stopCountdown(context, length) {
         context.commit("mutateCurrentCountdown", {

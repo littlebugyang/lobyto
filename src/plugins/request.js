@@ -51,23 +51,16 @@ const requests = {
     },
 
     // countdown-oriented
-    getCountdowns: function (succ, fail) {
-        return axios.get("/get_countdowns").then(function (res) {
-            succ(requests.dataMap("countdown", res.data))
-        }).catch(function (error) {
-            fail(error)
-        })
+    getCountdowns: function () {
+        return axios.get("/get_countdowns").then((res) => requests.dataMap("countdown", res.data))
     },
-    addCountdown: function (body, succ, fail) {
-        return axios.post("/add_countdown", {
+
+    addCountdown: function ({body}) {
+        body = Object.assign(body, {
             userName: secret.userName,
             password: secret.password,
-            countdown: body.countdown
-        }).then(function (res) {
-            succ(requests.dataMap("countdown", res.data))
-        }).catch(function (error) {
-            fail(error)
         })
+        return axios.post("/add_countdown", body).then((res) => requests.dataMap("countdown", res.data))
     }
 }
 

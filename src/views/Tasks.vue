@@ -44,14 +44,7 @@
             return {}
         },
         computed: {
-            // use computed to avoid redundant traversal
-            doneTasks: function () {
-                return this.tasks.filter(task => task.status == 1)
-            },
-            undoneTasks: function () {
-                return this.tasks.filter(task => task.status == 0)
-            },
-            ...mapState("task", ["tasks"])
+            ...mapState("task", ["undoneTasks", "doneTasks"])
         },
         methods: {
             exportTasks: function () {
@@ -120,7 +113,7 @@
 
                 document.body.removeChild(textArea)
             },
-            ...mapActions("task", ["getTasks"])
+            ...mapActions("task", ["getUndoneTasks", "getDoneTasks"])
         }
     }
 </script>

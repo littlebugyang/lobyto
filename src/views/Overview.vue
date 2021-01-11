@@ -86,6 +86,7 @@
         mounted: function () {
             // get tasks and countdowns
             this.getUndoneTasks()
+            this.getCountdowns()
             // todo: get countdowns
 
             // initialize echarts
@@ -149,8 +150,8 @@
                 return sum
             },
             ...mapState("task", ["undoneTasks"]),
-            ...mapState("countdown", ["currentCountdown"]),
-            ...mapState("overview", ["counting", "tasks", "countdowns", "modal"])
+            ...mapState("countdown", ["currentCountdown", "countdowns"]),
+            ...mapState("overview", ["counting", "modal"])
         },
         methods: {
             confirmAdd: function () {
@@ -200,7 +201,7 @@
                 this.newTitle = val
             },
             ...mapActions("task", ["getUndoneTasks", "addTask"]),
-            ...mapActions("overview", ["getCountdowns", "addCountdown"]),
+            ...mapActions("countdown", ["getCountdowns"]),
             ...mapActions(["request"])
         }
     }

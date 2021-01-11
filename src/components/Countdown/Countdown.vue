@@ -50,8 +50,7 @@
                 }
 
                 this.addCountdown({
-                    request: requests.addCountdown,
-                    data: {
+                    body: {
                         countdown: this.currentCountdown
                     }
                 })

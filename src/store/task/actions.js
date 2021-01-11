@@ -62,10 +62,10 @@ export default {
     },
 
     getTaskTitleById(context, id) {
-        const tasks = context.state.tasks
-        for (let i = 0; i < tasks.length; ++i) {
-            if (tasks[i].id === id) {
-                return tasks[i].title
+        const undoneTasks = context.state.undoneTasks
+        for (let i = 0; i < undoneTasks.length; ++i) {
+            if (undoneTasks[i].id === id) {
+                return undoneTasks[i].title
             }
         }
         return ""

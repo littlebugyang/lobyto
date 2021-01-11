@@ -25,7 +25,7 @@
             }
         },
         computed: {
-            ...mapState("overview", ["tasks"]),
+            ...mapState("task", ["undoneTasks"]),
             ...mapState("countdown", ["currentCountdown"])
         },
         methods: {
@@ -40,7 +40,7 @@
             ...mapActions("task", ["getTaskTitleById"])
         },
         watch: {
-            tasks() {
+            undoneTasks() {
                 // requests.getTasks' result is much likely to be late after this component mounted
                 // Besides, when title of task is edited, the title can be changed immediately.
                 this.getTaskTitleById(this.currentCountdown.taskId).then(title => this.title = title)
