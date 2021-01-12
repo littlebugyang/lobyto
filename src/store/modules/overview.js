@@ -14,16 +14,15 @@ export default {
         },
         editTaskModal: {
             show: false,
-            task: {
-                id: 0,
-                title: "",
-                status: 0
-            }
+            task: {}
         },
         confirmModal: {
             show: false,
             title: "",
-            taskId: 0
+            content: "",
+            type: "",
+            confirm: function () {
+            }
         }
     },
     getters: {},
@@ -43,11 +42,13 @@ export default {
         toggleCountdownModal(context, countdownModal) {
             context.commit("update", {prop: "countdownModal", data: countdownModal})
         },
-        toggleEditTaskModal(context, editTaskModal) {
-            context.commit("update", {prop: "editTaskModal", data: editTaskModal})
+        toggleEditTaskModal({commit, state}, editTaskModal) {
+            const newEditTaskModal = Object.assign(Object.assign({}, state.editTaskModal), editTaskModal)
+            commit("update", {prop: "editTaskModal", data: newEditTaskModal})
         },
-        toggleConfirmModal(context, confirmModal) {
-            context.commit("update", {prop: "confirmModal", data: confirmModal})
+        toggleConfirmModal({commit, state}, confirmModal) {
+            const newConfirmModal = Object.assign(Object.assign({}, state.confirmModal), confirmModal)
+            commit("update", {prop: "confirmModal", data: newConfirmModal})
         }
     }
 }

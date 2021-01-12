@@ -31,13 +31,33 @@
         methods: {
             stop: function () {
                 // "Stop" means "interrupt"
-                this.stopCountdown(Math.floor((Date.now() - this.currentCountdown.startTime) / 60000))
+                this.toggleConfirmModal({
+                    show: true,
+                    title: "To finish the task ahead",
+                    content: "Countdown passed away within 1 minute won't count. ",
+                    type: "default",
+                    confirm: () => {
+                        this.stopCountdown(Math.floor((Date.now() - this.currentCountdown.startTime) / 60000))
+                        this.toggleConfirmModal({show: false})
+                    }
+                })
             },
             cancel: function () {
-                this.cancelCountdown()
+                this.toggleConfirmModal({
+                    show: true,
+                    title: "To cancel the countdown",
+                    content: "Not a single minute will be counted into the sum. ",
+                    type: "danger",
+                    confirm: () => {
+                        this.cancelCountdown()
+                        this.toggleConfirmModal({show: false})
+                    }
+                })
+
             },
             ...mapActions("countdown", ["stopCountdown", "cancelCountdown"]),
-            ...mapActions("task", ["getTaskTitleById"])
+            ...mapActions("task", ["getTaskTitleById"]),
+            ...mapActions("overview", ["toggleConfirmModal"])
         },
         watch: {
             undoneTasks() {

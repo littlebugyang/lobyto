@@ -19,24 +19,23 @@
 <script>
     import Modal from "@/components/Modal"
     import BaseInput from "@/components/BaseInput"
+    import BaseButton from "@/components/BaseButton"
     import {mapState, mapActions} from "vuex"
 
     export default {
         name: "EditTaskModal",
-        components: {Modal, BaseInput},
+        components: {Modal, BaseInput, BaseButton},
         computed: {
             ...mapState("overview", ["editTaskModal"])
         },
         watch: {
-            // two-way bind this.showModal and this.modal.show
+            // two-way bind this.showModal and this.countdownModal.show
             showModal: function (val) {
                 if (!val) {
                     this.toggleEditTaskModal({show: false})
-                    this.$store.dispatch("overview/toggleEditTaskModal", false)
                 }
             },
             editTaskModal: function (modal) {
-                console.log(modal)
                 this.showModal = true
                 this.newTitle = modal.task.title
             }
@@ -58,7 +57,7 @@
                         }
                     }
                 })
-                this.toggleEditTaskModal(Object.assign(this.editTaskModal, {show: false}))
+                this.toggleEditTaskModal({show: false})
             },
             handleNewTitleInput: function (val) {
                 this.newTitle = val

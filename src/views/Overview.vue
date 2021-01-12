@@ -65,7 +65,8 @@
             </div>
         </div>
         <countdown-modal></countdown-modal>
-        <EditTaskModal></EditTaskModal>
+        <edit-task-modal></edit-task-modal>
+        <confirm-modal></confirm-modal>
     </div>
 </template>
 
@@ -74,16 +75,17 @@
     import BaseButton from "@/components/BaseButton"
     import TaskItem from "@/components/TaskItem"
     import CountdownProgress from "@/views/Countdown/CountdownProgress"
-    import CountdownModal from "@/views/Modal/CountdownModal"
     import {mapState, mapActions} from "vuex"
     import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
     import RecentChart from "@/views/Chart/RecentChart"
+    import CountdownModal from "@/views/Modal/CountdownModal"
     import EditTaskModal from "@/views/Modal/EditTaskModal"
+    import ConfirmModal from "@/views/Modal/ConfirmModal"
 
     export default {
         name: "Overview",
         components: {
-            EditTaskModal, CountdownModal,
+            EditTaskModal, CountdownModal, ConfirmModal,
             RecentChart, CountdownProgress, BaseButton, BaseInput, TaskItem
         },
         mounted: function () {

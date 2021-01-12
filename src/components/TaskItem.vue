@@ -96,34 +96,58 @@
                 })
             },
             taskToDelete: function () {
-                // todo: Evoke requests.deleteTask
+                // Keep this constraint before the undo feature is done.
                 if (this.currentCountdown.taskId === this.id) {
                     console.error("Unable to delete the being counted task. ")
                     return
                 }
-                this.updateTask({
-                    body: {
-                        task: {
-                            id: this.id,
-                            title: this.title,
-                            status: 2
-                        }
+                this.toggleConfirmModal({
+                    show: true,
+                    title: `To delete task: ${this.task.title}`,
+                    content: `You're about to delete task with title: <br/>${this.task.title}`,
+                    type: "danger",
+                    confirm: () => {
+                        this.updateTask({
+                            body: {
+                                task: {
+                                    id: this.id,
+                                    title: this.title,
+                                    status: 2
+                                }
+                            }
+                        })
+                        this.toggleConfirmModal({show: false})
                     }
                 })
             },
             taskToAbandon: function () {
-                this.updateTask({
-                    body: {
-                        task: {
-                            id: this.id,
-                            title: this.title,
-                            status: 3
-                        }
+                // Keep this constraint before the undo feature is done.
+                if (this.currentCountdown.taskId === this.id) {
+                    console.error("Unable to delete the being counted task. ")
+                    return
+                }
+                this.toggleConfirmModal({
+                    show: true,
+                    title: `To abandon task: ${this.task.title}`,
+                    content: `You're about to abandon task with title: <br/>${this.task.title}`,
+                    type: "info",
+                    confirm: () => {
+                        this.updateTask({
+                            body: {
+                                task: {
+                                    id: this.task.id,
+                                    title: this.task.title,
+                                    status: 3
+                                }
+                            }
+                        })
+                        this.toggleConfirmModal({show: false})
                     }
                 })
             },
             ...mapActions("task", ["updateTask"]),
-            ...mapActions("overview", ["toggleCountdownModal", "toggleEditTaskModal"])
+            ...mapActions("overview", ["toggleCountdownModal",
+                "toggleEditTaskModal", "toggleConfirmModal"])
         }
     }
 </script>
