@@ -10,6 +10,7 @@ import Profile from "./views/Profile.vue";
 import Overview from "./views/Overview";
 import Countdowns from "./views/Countdowns";
 import Tasks from "./views/Tasks"
+import Settings from "@/views/Settings"
 import Footer from "./layout/Footer";
 import Header from "./layout/Header";
 
@@ -42,6 +43,15 @@ export default new Router({
             components: {
                 header: Header,
                 default: Tasks,
+                footer: Footer
+            }
+        },
+        {
+            path: "/settings",
+            name: "settings",
+            components: {
+                header: Header,
+                default: Settings,
                 footer: Footer
             }
         },

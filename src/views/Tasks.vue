@@ -38,7 +38,8 @@
             BaseButton, TaskItem, Modal
         },
         mounted: function () {
-            this.getTasks()
+            this.getUndoneTasks()
+            this.getDoneTasks()
         },
         data() {
             return {}
