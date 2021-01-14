@@ -30,10 +30,10 @@
                     </a>
                 </li>
                 <base-dropdown tag="li" title="Settings">
-                    <a class="dropdown-item" href="#">Task settings</a>
-                    <a class="dropdown-item" href="#">Countdown settings</a>
+                    <a class="dropdown-item" href="#/settings#task">Task settings</a>
+                    <a class="dropdown-item" href="#/settings#countdown">Countdown settings</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#">System settings</a>
+                    <a class="dropdown-item" href="#/settings#system">System settings</a>
                 </base-dropdown>
             </ul>
         </base-nav>

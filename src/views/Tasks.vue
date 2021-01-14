@@ -8,19 +8,35 @@
                     <span>Remaining Tasks</span>
                     <base-button type="primary" @click="exportTasks">export</base-button>
                 </h4>
-
-                <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.title">
-                </task-item>
-
+                <task-item v-for="task in undoneTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
+                           :task="task"></task-item>
                 <hr/>
 
                 <!-- View the completed tasks -->
                 <h4 class="mb-5">
                     <span>Completed Tasks</span>
                 </h4>
+                <task-item v-for="task in doneTasks" :key="task.id" :done=true :id="task.id" :title="task.title"
+                           :task="task"></task-item>
+                <hr/>
 
-                <task-item v-for="task in doneTasks" :key="task.id" :done=true :id="task.id" :title="task.title">
-                </task-item>
+                <!-- View the deleted tasks -->
+                <a href="#test">ToTest</a>
+                <h4 class="mb-5">
+                    <span>Deleted Tasks</span>
+                </h4>
+                <task-item v-for="task in deletedTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
+                           :task="task"></task-item>
+                <hr/>
+
+                <!-- View the abandoned tasks -->
+                <a name="test">Test</a>
+                <h4 class="mb-5">
+                    <span>Abandoned Tasks</span>
+                </h4>
+                <task-item v-for="task in abandonedTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
+                           :task="task"></task-item>
+                <hr/>
             </div>
         </div>
     </div>
@@ -45,7 +61,7 @@
             return {}
         },
         computed: {
-            ...mapState("task", ["undoneTasks", "doneTasks"])
+            ...mapState("task", ["undoneTasks", "doneTasks", "deletedTasks", "abandonedTasks"])
         },
         methods: {
             exportTasks: function () {
