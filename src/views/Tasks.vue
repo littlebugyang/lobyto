@@ -21,7 +21,6 @@
                 <hr/>
 
                 <!-- View the deleted tasks -->
-                <a href="#test">ToTest</a>
                 <h4 class="mb-5">
                     <span>Deleted Tasks</span>
                 </h4>
@@ -30,13 +29,11 @@
                 <hr/>
 
                 <!-- View the abandoned tasks -->
-                <a name="test">Test</a>
                 <h4 class="mb-5">
                     <span>Abandoned Tasks</span>
                 </h4>
                 <task-item v-for="task in abandonedTasks" :key="task.id" :done=false :id="task.id" :title="task.title"
                            :task="task"></task-item>
-                <hr/>
             </div>
         </div>
     </div>
@@ -56,6 +53,8 @@
         mounted: function () {
             this.getUndoneTasks()
             this.getDoneTasks()
+            this.getDeletedTasks()
+            this.getAbandonedTasks()
         },
         data() {
             return {}
@@ -130,7 +129,7 @@
 
                 document.body.removeChild(textArea)
             },
-            ...mapActions("task", ["getUndoneTasks", "getDoneTasks"])
+            ...mapActions("task", ["getUndoneTasks", "getDoneTasks", "getDeletedTasks", "getAbandonedTasks"])
         }
     }
 </script>

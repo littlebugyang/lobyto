@@ -1,5 +1,19 @@
+import taskStatus from "@/plugins/taskStatus"
+
 export default {
-    getTasks({dispatch}, payload) {
+    getTasks({dispatch, commit}, payload) {
+        const tasksType = payload.type
+        delete payload.type
+        const originSucceed = payload.succeed
+        payload.succeed = (tasks) => {
+            commit("replaceTasks",
+                {
+                    prop: tasksType || "tasks",
+                    tasks
+                })
+            originSucceed ? originSucceed(tasks) : null
+        }
+
         dispatch(
             "request",
             Object.assign({api: "getTasks"}, payload),
@@ -7,30 +21,30 @@ export default {
         )
     },
 
-    getUndoneTasks({dispatch, commit}, payload = {}) {
-        const originSucceed = payload.succeed
-        payload.succeed = (res) => {
-            commit("replaceUndoneTasks", res.filter(task => task.status === 0))
-            originSucceed ? originSucceed(res) : null
-        }
-        dispatch(
-            "request",
-            Object.assign({api: "getTasks"}, payload),
-            {root: true}
-        )
+    // Different task list may want different pages and perPages, but basically distinguished by task type
+    // Thus I set four different actions for four different tasks
+    getUndoneTasks({dispatch, commit}, payload = {params: {}}) {
+        payload.type = "undoneTasks"
+        Object.assign(payload.params, {status: taskStatus["undone"]})
+        dispatch("getTasks", payload)
     },
 
-    getDoneTasks({dispatch, commit}, payload = {}) {
-        const originSucceed = payload.succeed
-        payload.succeed = (res) => {
-            commit("replaceDoneTasks", res.filter(task => task.status === 1))
-            originSucceed ? originSucceed(res) : null
-        }
-        dispatch(
-            "request",
-            Object.assign({api: "getTasks"}, payload),
-            {root: true}
-        )
+    getDoneTasks({dispatch, commit}, payload = {params: {}}) {
+        payload.type = "doneTasks"
+        Object.assign(payload.params, {status: taskStatus["done"]})
+        dispatch("getTasks", payload)
+    },
+
+    getDeletedTasks({dispatch, commit}, payload = {params: {}}) {
+        payload.type = "deletedTasks"
+        Object.assign(payload.params, {status: taskStatus["deleted"]})
+        dispatch("getTasks", payload)
+    },
+
+    getAbandonedTasks({dispatch, commit}, payload = {params: {}}) {
+        payload.type = "abandonedTasks"
+        Object.assign(payload.params, {status: taskStatus["abandoned"]})
+        dispatch("getTasks", payload)
     },
 
     addTask({dispatch, commit}, payload) {

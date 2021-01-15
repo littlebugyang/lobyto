@@ -44,17 +44,7 @@ export default {
         }
     },
 
-    replaceTasks(state, payload) {
-        state.tasks = payload
-    },
-
-    // undoneTasks
-    replaceUndoneTasks(state, payload) {
-        state.undoneTasks = payload
-    },
-
-    // doneTasks
-    replaceDoneTasks(state, payload) {
-        state.doneTasks = payload
+    replaceTasks(state, {prop, tasks}) {
+        state[prop] = tasks
     }
 }

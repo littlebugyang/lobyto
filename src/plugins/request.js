@@ -30,8 +30,8 @@ const requests = {
         })
     },
     // task-oriented
-    getTasks: function () {
-        return axios.get("/get_tasks").then((res) => requests.dataMap("task", res.data))
+    getTasks: function ({params}) {
+        return axios.get("/get_tasks", {params}).then((res) => requests.dataMap("task", res.data))
     },
 
     addTask: function ({body}) {
