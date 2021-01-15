@@ -40,10 +40,14 @@
                     <base-button type="primary" @click="exportTasks">export</base-button>
                 </h4>
 
-                <task-item v-for="task in undoneTasks"
-                           :key="task.id" :id="task.id" :task="task"
-                           :done="task.status===1" :title="task.title">
+                <task-item
+                        v-for="task in undoneTasksForPagination"
+                        :key="task.id" :id="task.id" :task="task"
+                        :done="task.status===1" :title="task.title">
                 </task-item>
+                <base-pagination align="center"
+                                 :total="undoneTasks.length" :per-page="pagination.perPage"
+                                 v-model="pagination.currentPage"></base-pagination>
 
                 <hr/>
 
@@ -73,6 +77,7 @@
 <script>
     import BaseInput from "@/components/BaseInput"
     import BaseButton from "@/components/BaseButton"
+    import BasePagination from "@/components/BasePagination"
     import TaskItem from "@/components/TaskItem"
     import CountdownProgress from "@/views/Countdown/CountdownProgress"
     import {mapState, mapActions} from "vuex"
@@ -85,8 +90,13 @@
     export default {
         name: "Overview",
         components: {
-            EditTaskModal, CountdownModal, ConfirmModal,
+            EditTaskModal, CountdownModal, ConfirmModal, BasePagination,
             RecentChart, CountdownProgress, BaseButton, BaseInput, TaskItem
+        },
+        watch: {
+            undoneTasks() {
+
+            }
         },
         mounted: function () {
             // get tasks and countdowns
@@ -96,6 +106,10 @@
         data() {
             return {
                 newTitle: "",
+                pagination: {
+                    currentPage: 1,
+                    perPage: 5
+                },
 
                 // The variables below are about countdown. They should be stored in local storage.
                 // todo: change object variable name to "currentCountdown"
@@ -107,6 +121,10 @@
             }
         },
         computed: {
+            undoneTasksForPagination: function () {
+                const undoneTasks = this.undoneTasks
+                return undoneTasks.slice((this.pagination.currentPage - 1) * this.pagination.perPage, this.pagination.currentPage * this.pagination.perPage)
+            },
             sumCountdown: function () {
                 let sum = 0
 
