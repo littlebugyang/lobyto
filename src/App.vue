@@ -13,7 +13,7 @@
 </template>
 <script>
     import {FadeTransition} from "vue2-transitions"
-    import Countdown from "@/components/Countdown/Countdown"
+    import Countdown from "@/views/Countdown/Countdown"
     import WaitingModal from "@/views/Modal/WaitingModal"
 
     export default {

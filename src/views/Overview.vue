@@ -45,8 +45,8 @@
                         :key="task.id" :id="task.id" :task="task"
                         :done="task.status===1" :title="task.title">
                 </task-item>
-                <base-pagination align="center"
-                                 :total="undoneTasks.length" :per-page="pagination.perPage"
+                <base-pagination align="center" :page-count="Math.ceil(undoneTasks.length / pagination.perPage)"
+                                 :per-page="pagination.perPage"
                                  v-model="pagination.currentPage"></base-pagination>
 
                 <hr/>
@@ -78,24 +78,25 @@
     import BaseInput from "@/components/BaseInput"
     import BaseButton from "@/components/BaseButton"
     import BasePagination from "@/components/BasePagination"
-    import TaskItem from "@/components/TaskItem"
+    import TaskItem from "@/views/Task/TaskItem"
+    import TaskList from "@/views/Task/TaskList"
     import CountdownProgress from "@/views/Countdown/CountdownProgress"
-    import {mapState, mapActions} from "vuex"
-    import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
     import RecentChart from "@/views/Chart/RecentChart"
     import CountdownModal from "@/views/Modal/CountdownModal"
     import EditTaskModal from "@/views/Modal/EditTaskModal"
     import ConfirmModal from "@/views/Modal/ConfirmModal"
+    import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
+    import {mapState, mapActions} from "vuex"
 
     export default {
         name: "Overview",
         components: {
             EditTaskModal, CountdownModal, ConfirmModal, BasePagination,
-            RecentChart, CountdownProgress, BaseButton, BaseInput, TaskItem
+            RecentChart, CountdownProgress, BaseButton, BaseInput, TaskList, TaskItem
         },
         watch: {
-            undoneTasks() {
-
+            undoneTasks(val) {
+                console.log("undoneTasks changed to: ", val)
             }
         },
         mounted: function () {

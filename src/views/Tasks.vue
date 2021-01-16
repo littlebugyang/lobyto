@@ -41,7 +41,7 @@
 
 <script>
     import BaseButton from "@/components/BaseButton"
-    import TaskItem from "@/components/TaskItem"
+    import TaskItem from "@/views/Task/TaskItem"
     import Modal from "@/components/Modal"
     import {mapState, mapActions} from "vuex"
 
