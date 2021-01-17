@@ -35,19 +35,13 @@
                 <hr/>
 
                 <!-- View the remaining tasks -->
-                <h4 class="mb-5 mt-4 d-flex justify-content-between">
-                    <span>Remaining Tasks</span>
-                    <base-button type="primary" @click="exportTasks">export</base-button>
-                </h4>
-
-                <task-item
-                        v-for="task in undoneTasksForPagination"
-                        :key="task.id" :id="task.id" :task="task"
-                        :done="task.status===1" :title="task.title">
-                </task-item>
-                <base-pagination align="center" :page-count="Math.ceil(undoneTasks.length / pagination.perPage)"
-                                 :per-page="pagination.perPage"
-                                 v-model="pagination.currentPage"></base-pagination>
+                <task-list
+                        title="Remaining Tasks"
+                        :tasks="undoneTasks"
+                        :pagination="paginationUndone"
+                        @pageChanged="handleUndoneTasksPageChanged"
+                >
+                </task-list>
 
                 <hr/>
 
@@ -78,7 +72,6 @@
     import BaseInput from "@/components/BaseInput"
     import BaseButton from "@/components/BaseButton"
     import BasePagination from "@/components/BasePagination"
-    import TaskItem from "@/views/Task/TaskItem"
     import TaskList from "@/views/Task/TaskList"
     import CountdownProgress from "@/views/Countdown/CountdownProgress"
     import RecentChart from "@/views/Chart/RecentChart"
@@ -92,32 +85,19 @@
         name: "Overview",
         components: {
             EditTaskModal, CountdownModal, ConfirmModal, BasePagination,
-            RecentChart, CountdownProgress, BaseButton, BaseInput, TaskList, TaskItem
-        },
-        watch: {
-            undoneTasks(val) {
-                console.log("undoneTasks changed to: ", val)
-            }
+            RecentChart, CountdownProgress, BaseButton, BaseInput, TaskList
         },
         mounted: function () {
             // get tasks and countdowns
-            this.getUndoneTasks()
+            this.handleUndoneTasksPageChanged({page: 1})
             this.getCountdowns()
         },
         data() {
             return {
                 newTitle: "",
-                pagination: {
-                    currentPage: 1,
-                    perPage: 5
-                },
-
-                // The variables below are about countdown. They should be stored in local storage.
-                // todo: change object variable name to "currentCountdown"
-                countdown: {
-                    taskId: -1,
-                    startTime: 0,
-                    length: "15"
+                paginationUndone: {
+                    pageCount: 5,
+                    perPage: 10
                 }
             }
         },
@@ -169,6 +149,9 @@
             },
             handleNewTaskInput: function (val) {
                 this.newTitle = val
+            },
+            handleUndoneTasksPageChanged: function ({page}) {
+                this.getUndoneTasks({params: {page, perPage: this.paginationUndone.perPage}})
             },
             ...mapActions("task", ["getUndoneTasks", "addTask"]),
             ...mapActions("countdown", ["getCountdowns"]),
