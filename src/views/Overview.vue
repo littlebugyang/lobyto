@@ -87,7 +87,6 @@
         mounted: function () {
             // get tasks and countdowns
             this.handleUndoneTasksPageChanged({page: 1})
-            this.getCountdowns()
         },
         data() {
             return {
@@ -103,25 +102,8 @@
                 const undoneTasks = this.undoneTasks
                 return undoneTasks.slice((this.pagination.currentPage - 1) * this.pagination.perPage, this.pagination.currentPage * this.pagination.perPage)
             },
-            sumCountdown: function () {
-                let sum = 0
-
-                let now = new Date()
-                let todayYear = now.getFullYear()
-                let todayMonth = now.getMonth()
-                let todayDate = now.getDate()
-
-                for (let i = 0; i < this.countdowns.length; ++i) {
-                    let startTime = new Date(this.countdowns[i].startTime)
-                    // This is today's countdown.
-                    if (startTime.getFullYear() === todayYear && startTime.getMonth() === todayMonth && startTime.getDate() === todayDate) {
-                        sum += parseInt(this.countdowns[i].length)
-                    }
-                }
-                return sum
-            },
             ...mapState("task", ["undoneTasks"]),
-            ...mapState("countdown", ["currentCountdown", "countdowns"]),
+            ...mapState("countdown", ["currentCountdown"]),
             ...mapState("overview", ["counting", "countdownModal", "editTaskModal", "confirmModal"])
         },
         methods: {
