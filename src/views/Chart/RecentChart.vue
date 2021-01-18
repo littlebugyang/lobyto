@@ -27,7 +27,7 @@
                 let recentLengths = []
                 let dateCount = 0
                 let maxDates = 8
-                for (let i = this.countdowns.length - 1; i > 0 && dateCount < maxDates; --i) {
+                for (let i = 0; i < this.countdowns.length && dateCount < maxDates; ++i) {
                     let startTime = new Date(Date.parse(this.countdowns[i].startTime))
                     let recentMonth = startTime.getMonth() + 1
                     let recentDate = startTime.getDate()

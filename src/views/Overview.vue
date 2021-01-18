@@ -46,11 +46,7 @@
                 <hr/>
 
                 <!-- View the Today's countdown -->
-                <h4 class="mb-5">
-                    <span>Today's Countdowns</span>
-                </h4>
-
-                <span>The time you have been concentrated today is: <span style="color: #fb6340; font-size: 300%">{{parseInt(sumCountdown / 60)}} h {{sumCountdown % 60}} m</span></span>
+                <countdown-sum></countdown-sum>
 
                 <hr/>
 
@@ -76,6 +72,7 @@
     import CountdownProgress from "@/views/Countdown/CountdownProgress"
     import RecentChart from "@/views/Chart/RecentChart"
     import CountdownModal from "@/views/Modal/CountdownModal"
+    import CountdownSum from "@/views/Countdown/CountdownSum"
     import EditTaskModal from "@/views/Modal/EditTaskModal"
     import ConfirmModal from "@/views/Modal/ConfirmModal"
     import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
@@ -85,7 +82,7 @@
         name: "Overview",
         components: {
             EditTaskModal, CountdownModal, ConfirmModal, BasePagination,
-            RecentChart, CountdownProgress, BaseButton, BaseInput, TaskList
+            RecentChart, CountdownProgress, CountdownSum, BaseButton, BaseInput, TaskList
         },
         mounted: function () {
             // get tasks and countdowns

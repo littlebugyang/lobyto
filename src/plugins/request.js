@@ -51,8 +51,8 @@ const requests = {
     },
 
     // countdown-oriented
-    getCountdowns: function () {
-        return axios.get("/get_countdowns").then((res) => requests.dataMap("countdown", res.data))
+    getCountdowns: function ({params}) {
+        return axios.get("/get_countdowns", params).then((res) => requests.dataMap("countdown", res.data))
     },
 
     addCountdown: function ({body}) {
