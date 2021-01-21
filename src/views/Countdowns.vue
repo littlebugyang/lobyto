@@ -5,18 +5,17 @@
 </template>
 
 <script>
-    import {mapState} from "vuex"
+  import { mapState } from 'vuex'
 
-    export default {
-        name: "Countdowns",
-        data() {
-            return {}
-        },
-        computed: {
-            ...mapState({
-            })
-        }
-    }
+  export default {
+    name: 'Countdowns',
+    data () {
+      return {}
+    },
+    computed: {
+      ...mapState({}),
+    },
+  }
 </script>
 
 <style scoped>

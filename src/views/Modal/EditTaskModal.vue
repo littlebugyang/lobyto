@@ -17,55 +17,55 @@
 </template>
 
 <script>
-    import Modal from "@/components/Modal"
-    import BaseInput from "@/components/BaseInput"
-    import BaseButton from "@/components/BaseButton"
-    import {mapState, mapActions} from "vuex"
+  import Modal from '@/components/Modal'
+  import BaseInput from '@/components/BaseInput'
+  import BaseButton from '@/components/BaseButton'
+  import { mapState, mapActions } from 'vuex'
 
-    export default {
-        name: "EditTaskModal",
-        components: {Modal, BaseInput, BaseButton},
-        computed: {
-            ...mapState("overview", ["editTaskModal"])
-        },
-        watch: {
-            // two-way bind this.showModal and this.countdownModal.show
-            showModal: function (val) {
-                if (!val) {
-                    this.toggleEditTaskModal({show: false})
-                }
-            },
-            editTaskModal: function (modal) {
-                this.showModal = true
-                this.newTitle = modal.task.title
-            }
-        },
-        data() {
-            return {
-                showModal: false,
-                newTitle: ""
-            }
-        },
-        methods: {
-            confirmEdition: function () {
-                this.updateTask({
-                    body: {
-                        task: {
-                            id: this.editTaskModal.task.id,
-                            title: this.newTitle,
-                            status: this.editTaskModal.task.status
-                        }
-                    }
-                })
-                this.toggleEditTaskModal({show: false})
-            },
-            handleNewTitleInput: function (val) {
-                this.newTitle = val
-            },
-            ...mapActions("task", ["updateTask"]),
-            ...mapActions("overview", ["toggleEditTaskModal"])
+  export default {
+    name: 'EditTaskModal',
+    components: { Modal, BaseInput, BaseButton },
+    computed: {
+      ...mapState('overview', ['editTaskModal']),
+    },
+    watch: {
+      // two-way bind this.showModal and this.countdownModal.show
+      showModal: function (val) {
+        if (!val) {
+          this.toggleEditTaskModal({ show: false })
         }
-    }
+      },
+      editTaskModal: function (modal) {
+        this.showModal = true
+        this.newTitle = modal.task.title
+      },
+    },
+    data () {
+      return {
+        showModal: false,
+        newTitle: '',
+      }
+    },
+    methods: {
+      confirmEdition: function () {
+        this.updateTask({
+          body: {
+            task: {
+              id: this.editTaskModal.task.id,
+              title: this.newTitle,
+              status: this.editTaskModal.task.status,
+            },
+          },
+        })
+        this.toggleEditTaskModal({ show: false })
+      },
+      handleNewTitleInput: function (val) {
+        this.newTitle = val
+      },
+      ...mapActions('task', ['updateTask']),
+      ...mapActions('overview', ['toggleEditTaskModal']),
+    },
+  }
 </script>
 
 <style scoped>

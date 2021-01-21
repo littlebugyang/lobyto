@@ -47,61 +47,61 @@
 </template>
 
 <script>
-    import BaseButton from "@/components/BaseButton"
-    import TaskList from "@/views/Task/TaskList"
-    import Modal from "@/components/Modal"
-    import {mapState, mapActions} from "vuex"
+  import BaseButton from '@/components/BaseButton'
+  import TaskList from '@/views/Task/TaskList'
+  import Modal from '@/components/Modal'
+  import { mapState, mapActions } from 'vuex'
 
-    export default {
-        name: "Tasks",
-        components: {
-            BaseButton, TaskList, Modal
+  export default {
+    name: 'Tasks',
+    components: {
+      BaseButton, TaskList, Modal,
+    },
+    mounted: function () {
+      this.handleUndoneTasksPageChanged({ page: 1 })
+      this.handleDoneTasksPageChanged({ page: 1 })
+      this.handleDeletedTasksPageChanged({ page: 1 })
+      this.handleAbandonedTasksPageChanged({ page: 1 })
+    },
+    data () {
+      return {
+        paginationUndone: {
+          pageCount: 5,
+          perPage: 10,
         },
-        mounted: function () {
-            this.handleUndoneTasksPageChanged({page: 1})
-            this.handleDoneTasksPageChanged({page: 1})
-            this.handleDeletedTasksPageChanged({page: 1})
-            this.handleAbandonedTasksPageChanged({page: 1})
+        paginationDone: {
+          pageCount: 5,
+          perPage: 10,
         },
-        data() {
-            return {
-                paginationUndone: {
-                    pageCount: 5,
-                    perPage: 10
-                },
-                paginationDone: {
-                    pageCount: 5,
-                    perPage: 10
-                },
-                paginationDeleted: {
-                    pageCount: 5,
-                    perPage: 10
-                },
-                paginationAbandoned: {
-                    pageCount: 5,
-                    perPage: 10
-                }
-            }
+        paginationDeleted: {
+          pageCount: 5,
+          perPage: 10,
         },
-        computed: {
-            ...mapState("task", ["undoneTasks", "doneTasks", "deletedTasks", "abandonedTasks"])
+        paginationAbandoned: {
+          pageCount: 5,
+          perPage: 10,
         },
-        methods: {
-            handleUndoneTasksPageChanged: function ({page}) {
-                this.getUndoneTasks({params: {page, perPage: this.paginationUndone.perPage}})
-            },
-            handleDoneTasksPageChanged: function ({page}) {
-                this.getDoneTasks({params: {page, perPage: this.paginationDone.perPage}})
-            },
-            handleDeletedTasksPageChanged: function ({page}) {
-                this.getDeletedTasks({params: {page, perPage: this.paginationDeleted.perPage}})
-            },
-            handleAbandonedTasksPageChanged: function ({page}) {
-                this.getAbandonedTasks({params: {page, perPage: this.paginationAbandoned.perPage}})
-            },
-            ...mapActions("task", ["getUndoneTasks", "getDoneTasks", "getDeletedTasks", "getAbandonedTasks"])
-        }
-    }
+      }
+    },
+    computed: {
+      ...mapState('task', ['undoneTasks', 'doneTasks', 'deletedTasks', 'abandonedTasks']),
+    },
+    methods: {
+      handleUndoneTasksPageChanged: function ({ page }) {
+        this.getUndoneTasks({ params: { page, perPage: this.paginationUndone.perPage } })
+      },
+      handleDoneTasksPageChanged: function ({ page }) {
+        this.getDoneTasks({ params: { page, perPage: this.paginationDone.perPage } })
+      },
+      handleDeletedTasksPageChanged: function ({ page }) {
+        this.getDeletedTasks({ params: { page, perPage: this.paginationDeleted.perPage } })
+      },
+      handleAbandonedTasksPageChanged: function ({ page }) {
+        this.getAbandonedTasks({ params: { page, perPage: this.paginationAbandoned.perPage } })
+      },
+      ...mapActions('task', ['getUndoneTasks', 'getDoneTasks', 'getDeletedTasks', 'getAbandonedTasks']),
+    },
+  }
 </script>
 
 <style scoped>

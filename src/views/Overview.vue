@@ -65,78 +65,71 @@
 </template>
 
 <script>
-    import BaseInput from "@/components/BaseInput"
-    import BaseButton from "@/components/BaseButton"
-    import BasePagination from "@/components/BasePagination"
-    import TaskList from "@/views/Task/TaskList"
-    import CountdownProgress from "@/views/Countdown/CountdownProgress"
-    import RecentChart from "@/views/Chart/RecentChart"
-    import CountdownModal from "@/views/Modal/CountdownModal"
-    import CountdownSum from "@/views/Countdown/CountdownSum"
-    import EditTaskModal from "@/views/Modal/EditTaskModal"
-    import ConfirmModal from "@/views/Modal/ConfirmModal"
-    import exportTasksCountdowns from "@/plugins/exportTasksCountdowns"
-    import {mapState, mapActions} from "vuex"
+  import BaseInput from '@/components/BaseInput'
+  import BaseButton from '@/components/BaseButton'
+  import BasePagination from '@/components/BasePagination'
+  import TaskList from '@/views/Task/TaskList'
+  import CountdownProgress from '@/views/Countdown/CountdownProgress'
+  import RecentChart from '@/views/Chart/RecentChart'
+  import CountdownModal from '@/views/Modal/CountdownModal'
+  import CountdownSum from '@/views/Countdown/CountdownSum'
+  import EditTaskModal from '@/views/Modal/EditTaskModal'
+  import ConfirmModal from '@/views/Modal/ConfirmModal'
+  import { mapState, mapActions } from 'vuex'
 
-    export default {
-        name: "Overview",
-        components: {
-            EditTaskModal, CountdownModal, ConfirmModal, BasePagination,
-            RecentChart, CountdownProgress, CountdownSum, BaseButton, BaseInput, TaskList
+  export default {
+    name: 'Overview',
+    components: {
+      EditTaskModal, CountdownModal, ConfirmModal, BasePagination,
+      RecentChart, CountdownProgress, CountdownSum, BaseButton, BaseInput, TaskList,
+    },
+    mounted: function () {
+      // get tasks and countdowns
+      this.handleUndoneTasksPageChanged({ page: 1 })
+    },
+    data () {
+      return {
+        newTitle: '',
+        paginationUndone: {
+          pageCount: 5,
+          perPage: 10,
         },
-        mounted: function () {
-            // get tasks and countdowns
-            this.handleUndoneTasksPageChanged({page: 1})
-        },
-        data() {
-            return {
-                newTitle: "",
-                paginationUndone: {
-                    pageCount: 5,
-                    perPage: 10
-                }
-            }
-        },
-        computed: {
-            undoneTasksForPagination: function () {
-                const undoneTasks = this.undoneTasks
-                return undoneTasks.slice((this.pagination.currentPage - 1) * this.pagination.perPage, this.pagination.currentPage * this.pagination.perPage)
+      }
+    },
+    computed: {
+      undoneTasksForPagination: function () {
+        const undoneTasks = this.undoneTasks
+        return undoneTasks.slice((this.pagination.currentPage - 1) * this.pagination.perPage,
+          this.pagination.currentPage * this.pagination.perPage)
+      },
+      ...mapState('task', ['undoneTasks']),
+      ...mapState('countdown', ['currentCountdown']),
+      ...mapState('overview', ['counting', 'countdownModal', 'editTaskModal', 'confirmModal']),
+    },
+    methods: {
+      confirmAdd: function () {
+        this.addTask({
+          body: {
+            task: {
+              title: this.newTitle,
             },
-            ...mapState("task", ["undoneTasks"]),
-            ...mapState("countdown", ["currentCountdown"]),
-            ...mapState("overview", ["counting", "countdownModal", "editTaskModal", "confirmModal"])
-        },
-        methods: {
-            confirmAdd: function () {
-                this.addTask({
-                    body: {
-                        task: {
-                            title: this.newTitle
-                        }
-                    }
-                })
+          },
+        })
 
-                // clear the input
-                this.newTitle = ""
-            },
-            exportTasks: function () {
-                if (exportTasksCountdowns(this.tasks, this.countdowns)) {
-                    // todo: show export successfully
-                } else {
-                    // todo: show failure to export
-                }
-            },
-            handleNewTaskInput: function (val) {
-                this.newTitle = val
-            },
-            handleUndoneTasksPageChanged: function ({page}) {
-                this.getUndoneTasks({params: {page, perPage: this.paginationUndone.perPage}})
-            },
-            ...mapActions("task", ["getUndoneTasks", "addTask"]),
-            ...mapActions("countdown", ["getCountdowns"]),
-            ...mapActions(["request"])
-        }
-    }
+        // clear the input
+        this.newTitle = ''
+      },
+      handleNewTaskInput: function (val) {
+        this.newTitle = val
+      },
+      handleUndoneTasksPageChanged: function ({ page }) {
+        this.getUndoneTasks({ params: { page, perPage: this.paginationUndone.perPage } })
+      },
+      ...mapActions('task', ['getUndoneTasks', 'addTask']),
+      ...mapActions('countdown', ['getCountdowns']),
+      ...mapActions(['request']),
+    },
+  }
 </script>
 
 <style scoped>

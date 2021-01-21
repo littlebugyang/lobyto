@@ -37,119 +37,120 @@
 </template>
 
 <script>
-    import {mapState, mapActions} from "vuex"
-    import BaseDropdown from "@/components/BaseDropdown"
+  import { mapState, mapActions } from 'vuex'
+  import BaseDropdown from '@/components/BaseDropdown'
 
-    export default {
-        name: "TaskItem",
-        components: {
-            BaseDropdown
-        },
-        props: {
-            done: Boolean,
-            id: Number,
-            title: String,
-            counting: {
-                type: Boolean,
-                default: false
-            },
-            task: {}
-        },
-        computed: {
-            ...mapState("countdown", ["currentCountdown"])
-        },
-        methods: {
-            toggleTaskDone: function () {
-                if (this.currentCountdown.taskId === this.id) {
-                    console.error("This task is being counted. ")
-                    return
-                }
-                this.updateTask({
-                    body: {
-                        task: {
-                            id: this.id,
-                            title: this.title,
-                            status: this.done ? 0 : 1
-                        }
-                    }
-                })
-            },
-            taskToCountdown: function () {
-                if (this.currentCountdown.taskId !== -1) {
-                    if (this.currentCountdown.taskId === this.id) {
-                        console.error("This task is being counted. ")
-                        return
-                    }
-                    console.error("There is another countdown counting. ")
-                    return
-                }
-                this.toggleCountdownModal({
-                    show: true,
-                    title: this.title,
-                    taskId: this.id
-                })
-            },
-            taskToEdit: function () {
-                this.toggleEditTaskModal({
-                    show: true,
-                    task: this.task
-                })
-            },
-            taskToDelete: function () {
-                // Keep this constraint before the undo feature is done.
-                if (this.currentCountdown.taskId === this.id) {
-                    console.error("Unable to delete the being counted task. ")
-                    return
-                }
-                this.toggleConfirmModal({
-                    show: true,
-                    title: `To delete task: ${this.task.title}`,
-                    content: `You're about to delete task with title: <br/>${this.task.title}`,
-                    type: "danger",
-                    confirm: () => {
-                        this.updateTask({
-                            body: {
-                                task: {
-                                    id: this.id,
-                                    title: this.title,
-                                    status: 2
-                                }
-                            }
-                        })
-                        this.toggleConfirmModal({show: false})
-                    }
-                })
-            },
-            taskToAbandon: function () {
-                // Keep this constraint before the undo feature is done.
-                if (this.currentCountdown.taskId === this.id) {
-                    console.error("Unable to delete the being counted task. ")
-                    return
-                }
-                this.toggleConfirmModal({
-                    show: true,
-                    title: `To abandon task: ${this.task.title}`,
-                    content: `You're about to abandon task with title: <br/>${this.task.title}`,
-                    type: "info",
-                    confirm: () => {
-                        this.updateTask({
-                            body: {
-                                task: {
-                                    id: this.task.id,
-                                    title: this.task.title,
-                                    status: 3
-                                }
-                            }
-                        })
-                        this.toggleConfirmModal({show: false})
-                    }
-                })
-            },
-            ...mapActions("task", ["updateTask"]),
-            ...mapActions("overview", ["toggleCountdownModal",
-                "toggleEditTaskModal", "toggleConfirmModal"])
+  export default {
+    name: 'TaskItem',
+    components: {
+      BaseDropdown,
+    },
+    props: {
+      done: Boolean,
+      id: Number,
+      title: String,
+      counting: {
+        type: Boolean,
+        default: false,
+      },
+      task: {},
+    },
+    computed: {
+      ...mapState('countdown', ['currentCountdown']),
+    },
+    methods: {
+      toggleTaskDone: function () {
+        if (this.currentCountdown.taskId === this.id) {
+          console.error('This task is being counted. ')
+          return
         }
-    }
+        this.updateTask({
+          body: {
+            task: {
+              id: this.id,
+              title: this.title,
+              status: this.done ? 0 : 1,
+            },
+          },
+        })
+      },
+      taskToCountdown: function () {
+        if (this.currentCountdown.taskId !== -1) {
+          if (this.currentCountdown.taskId === this.id) {
+            console.error('This task is being counted. ')
+            return
+          }
+          console.error('There is another countdown counting. ')
+          return
+        }
+        this.toggleCountdownModal({
+          show: true,
+          title: this.title,
+          taskId: this.id,
+        })
+      },
+      taskToEdit: function () {
+        this.toggleEditTaskModal({
+          show: true,
+          task: this.task,
+        })
+      },
+      taskToDelete: function () {
+        // Keep this constraint before the undo feature is done.
+        if (this.currentCountdown.taskId === this.id) {
+          console.error('Unable to delete the being counted task. ')
+          return
+        }
+        this.toggleConfirmModal({
+          show: true,
+          title: `To delete task: ${this.task.title}`,
+          content: `You're about to delete task with title: <br/>${this.task.title}`,
+          type: 'danger',
+          confirm: () => {
+            this.updateTask({
+              body: {
+                task: {
+                  id: this.id,
+                  title: this.title,
+                  status: 2,
+                },
+              },
+            })
+            this.toggleConfirmModal({ show: false })
+          },
+        })
+      },
+      taskToAbandon: function () {
+        // Keep this constraint before the undo feature is done.
+        if (this.currentCountdown.taskId === this.id) {
+          console.error('Unable to delete the being counted task. ')
+          return
+        }
+        this.toggleConfirmModal({
+          show: true,
+          title: `To abandon task: ${this.task.title}`,
+          content: `You're about to abandon task with title: <br/>${this.task.title}`,
+          type: 'info',
+          confirm: () => {
+            this.updateTask({
+              body: {
+                task: {
+                  id: this.task.id,
+                  title: this.task.title,
+                  status: 3,
+                },
+              },
+            })
+            this.toggleConfirmModal({ show: false })
+          },
+        })
+      },
+      ...mapActions('task', ['updateTask']),
+      ...mapActions('overview', [
+        'toggleCountdownModal',
+        'toggleEditTaskModal', 'toggleConfirmModal']),
+    },
+  }
 </script>
 
 <style lang="scss" scoped>

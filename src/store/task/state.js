@@ -1,7 +1,7 @@
 export default {
-    tasks: [],
-    undoneTasks: [],
-    doneTasks: [],
-    deletedTasks: [],
-    abandonedTasks: []
+  tasks: [],
+  undoneTasks: [],
+  doneTasks: [],
+  deletedTasks: [],
+  abandonedTasks: [],
 }

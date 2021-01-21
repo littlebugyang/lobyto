@@ -18,36 +18,36 @@
 </template>
 
 <script>
-    import Modal from "@/components/Modal"
-    import BaseButton from "@/components/BaseButton"
-    import {mapState, mapActions} from "vuex"
+  import Modal from '@/components/Modal'
+  import BaseButton from '@/components/BaseButton'
+  import { mapState, mapActions } from 'vuex'
 
-    export default {
-        name: "ConfirmModal",
-        components: {Modal, BaseButton},
-        computed: {
-            ...mapState("overview", ["confirmModal"])
-        },
-        watch: {
-            // two-way bind this.showModal and this.countdownModal.show
-            showModal: function (val) {
-                if (!val) {
-                    this.toggleConfirmModal({show: false})
-                }
-            },
-            confirmModal: function (modal) {
-                this.showModal = true
-            }
-        },
-        data() {
-            return {
-                showModal: false
-            }
-        },
-        methods: {
-            ...mapActions("overview", ["toggleConfirmModal"])
+  export default {
+    name: 'ConfirmModal',
+    components: { Modal, BaseButton },
+    computed: {
+      ...mapState('overview', ['confirmModal']),
+    },
+    watch: {
+      // two-way bind this.showModal and this.countdownModal.show
+      showModal: function (val) {
+        if (!val) {
+          this.toggleConfirmModal({ show: false })
         }
-    }
+      },
+      confirmModal: function (modal) {
+        this.showModal = true
+      },
+    },
+    data () {
+      return {
+        showModal: false,
+      }
+    },
+    methods: {
+      ...mapActions('overview', ['toggleConfirmModal']),
+    },
+  }
 </script>
 
 <style scoped>

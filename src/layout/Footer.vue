@@ -6,7 +6,8 @@
                 <div class="col-md-6">
                     <div class="copyright">
                         &copy; {{year}}
-                        <a href="https://github.com/littlebugyang/lobyto" target="_blank" rel="noopener">littlebugyang</a>
+                        <a href="https://github.com/littlebugyang/lobyto" target="_blank"
+                           rel="noopener">littlebugyang</a>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -23,14 +24,14 @@
 </template>
 
 <script>
-    export default {
-        name: "Footer",
-        data() {
-            return {
-                year: new Date().getFullYear()
-            }
-        }
-    }
+  export default {
+    name: 'Footer',
+    data () {
+      return {
+        year: new Date().getFullYear(),
+      }
+    },
+  }
 </script>
 
 <style scoped>

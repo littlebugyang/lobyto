@@ -8,16 +8,16 @@
 </template>
 
 <script>
-    import Modal from "@/components/Modal"
-    import {mapState} from "vuex"
+  import Modal from '@/components/Modal'
+  import { mapState } from 'vuex'
 
-    export default {
-        name: "WaitingModal",
-        components: {Modal},
-        computed: {
-            ...mapState(["waiting"])
-        }
-    }
+  export default {
+    name: 'WaitingModal',
+    components: { Modal },
+    computed: {
+      ...mapState(['waiting']),
+    },
+  }
 </script>
 
 <style scoped>

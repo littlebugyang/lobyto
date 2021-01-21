@@ -6,7 +6,7 @@
                     <a href="https://demos.creative-tim.com/vue-argon-design-system/documentation/">
                         <img src="img/brand/blue.png"/>
                     </a>
-<!--                    This brand logo will be here until lobyto's brand was designed.-->
+                    <!--                    This brand logo will be here until lobyto's brand was designed.-->
                 </div>
                 <div class="col-6 collapse-close">
                     <close-button @click="closeMenu"></close-button>
@@ -41,16 +41,16 @@
 </template>
 
 <script>
-    import BaseNav from "@/components/BaseNav";
-    import BaseDropdown from "@/components/BaseDropdown";
-    import CloseButton from "@/components/CloseButton";
+  import BaseNav from '@/components/BaseNav'
+  import BaseDropdown from '@/components/BaseDropdown'
+  import CloseButton from '@/components/CloseButton'
 
-    export default {
-        name: "Header",
-        components: {
-            BaseNav, BaseDropdown, CloseButton
-        }
-    }
+  export default {
+    name: 'Header',
+    components: {
+      BaseNav, BaseDropdown, CloseButton,
+    },
+  }
 </script>
 
 <style scoped>
