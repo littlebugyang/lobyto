@@ -2,7 +2,10 @@ import secret from '../secret'
 
 const axios = require('axios')
 
-axios.defaults.baseURL = '/api'
+const baseURL = '/api/'
+const version = 'v1'
+
+axios.defaults.baseURL = baseURL + version
 axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 const requests = {
@@ -31,7 +34,7 @@ const requests = {
   },
   // task-oriented
   getTasks: function ({ params }) {
-    return axios.get('/get_tasks', { params }).
+    return axios.get('/tasks', { params }).
       then((res) => requests.dataMap('task', res.data))
   },
 
@@ -40,7 +43,7 @@ const requests = {
       userName: secret.userName,
       password: secret.password,
     })
-    return axios.post('/add_task', body).
+    return axios.post('/tasks', body).
       then((res) => requests.dataMap('task', res.data))
   },
 
@@ -49,13 +52,13 @@ const requests = {
       userName: secret.userName,
       password: secret.password,
     })
-    return axios.put('/update_task', body).
+    return axios.put(`/tasks/${body.task.id}`, body).
       then((res) => requests.dataMap('task', res.data))
   },
 
   // countdown-oriented
   getCountdowns: function ({ params }) {
-    return axios.get('/get_countdowns', params).
+    return axios.get('/countdowns', params).
       then((res) => requests.dataMap('countdown', res.data))
   },
 
@@ -64,7 +67,7 @@ const requests = {
       userName: secret.userName,
       password: secret.password,
     })
-    return axios.post('/add_countdown', body).
+    return axios.post('/countdowns', body).
       then((res) => requests.dataMap('countdown', res.data))
   },
 }
